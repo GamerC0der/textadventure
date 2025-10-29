@@ -1,0 +1,216 @@
+{
+  "start": {
+    "text": "The hallway feels cold and empty, shadows dance on the walls, two paths lie ahead, one dark and narrow, one wide and dim",
+    "choices": [
+      { "text": "Go left into the narrow path", "nextScene": "left1" },
+      { "text": "Go right into the wide path", "nextScene": "right1" }
+    ]
+  },
+  "left1": {
+    "text": "Welcome to Game Name\n\nThe narrow path gets very dark, the walls feel close, strange marks glow faintly on the stones",
+    "choices": [
+      { "text": "Look at the marks", "nextScene": "left2" },
+      { "text": "Keep walking", "nextScene": "left3" }
+    ]
+  },
+  "left2": {
+    "text": "The marks are old symbols that seem to whisper, they look like forgotten writing from long ago",
+    "choices": [
+      { "text": "Try to read them", "nextScene": "left4" },
+      { "text": "Step back", "nextScene": "left3" }
+    ]
+  },
+  "left3": {
+    "text": "The path opens into a small room, a cold breeze blows, something feels like its watching you",
+    "choices": [
+      { "text": "Look around the room", "nextScene": "left5" },
+      { "text": "Find another way", "nextScene": "left6" }
+    ]
+  },
+  "left4": {
+    "text": "The symbols form words you can almost understand, they say something about thin walls between worlds",
+    "choices": [
+      { "text": "Say the words out loud", "nextScene": "left7" },
+      { "text": "Walk away", "nextScene": "left3" }
+    ]
+  },
+  "left5": {
+    "text": "In the middle sits a stone box, it feels very cold to touch, mist starts to gather around it",
+    "choices": [
+      { "text": "Open the box", "nextScene": "left8" },
+      { "text": "Look for another door", "nextScene": "left6" }
+    ]
+  },
+  "left6": {
+    "text": "You find a hidden door leading to old shelves filled with dusty books, they look very ancient",
+    "choices": [
+      { "text": "Look at the books", "nextScene": "left9" },
+      { "text": "Go back", "nextScene": "left3" }
+    ]
+  },
+  "left7": {
+    "text": "A pale shape appears, a ghost with sad eyes, it floats silently, watching you",
+    "choices": [
+      { "text": "Stay and watch", "nextScene": "left10" },
+      { "text": "Try to talk", "nextScene": "left11" }
+    ]
+  },
+  "left8": {
+    "text": "Inside the box is a glowing stone, it hums softly, the mist grows thicker around you",
+    "choices": [
+      { "text": "Pick up the stone", "nextScene": "left12" },
+      { "text": "Close the box", "nextScene": "left3" }
+    ]
+  },
+  "left9": {
+    "text": "One book has the same symbols on its cover, it feels heavy with old knowledge",
+    "choices": [
+      { "text": "Open the book", "nextScene": "left13" },
+      { "text": "Put it back", "nextScene": "left3" }
+    ]
+  },
+  "left10": {
+    "text": "The ghost lets out a soft moan and fades away, the room feels empty now",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "left11": {
+    "text": "The ghost listens, in a whispery voice it says, many have come here, few leave the same",
+    "choices": [
+      { "text": "Ask what it means", "nextScene": "left14" },
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "left12": {
+    "text": "The stone shows you blurry pictures of the past, old people studying in these rooms",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "left13": {
+    "text": "The book shows maps of tunnels and warnings about things that live in the dark",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "left14": {
+    "text": "The ghost sighs, power changes people, be careful what you seek, then it vanishes",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "right1": {
+    "text": "The wide path stays light enough to see, a soft wind blows from somewhere ahead",
+    "choices": [
+      { "text": "Follow the wind", "nextScene": "right2" },
+      { "text": "Look for the wind source", "nextScene": "right3" }
+    ]
+  },
+  "right2": {
+    "text": "The wind leads to a hanging light that sways gently, it gives off a soft, steady glow",
+    "choices": [
+      { "text": "Look at the light", "nextScene": "right4" },
+      { "text": "Walk past it", "nextScene": "right5" }
+    ]
+  },
+  "right3": {
+    "text": "The wind comes from a small hole in the wall, it leads to another room you cannot see",
+    "choices": [
+      { "text": "Crawl through", "nextScene": "right6" },
+      { "text": "Keep going", "nextScene": "right2" }
+    ]
+  },
+  "right4": {
+    "text": "The light never goes out, inside it you find words, light shows what darkness hides",
+    "choices": [
+      { "text": "Take the light", "nextScene": "right7" },
+      { "text": "Leave it", "nextScene": "right5" }
+    ]
+  },
+  "right5": {
+    "text": "Thick strings hang from the ceiling like old curtains, they sway in the breeze",
+    "choices": [
+      { "text": "Find another way", "nextScene": "right8" },
+      { "text": "Walk through", "nextScene": "right9" }
+    ]
+  },
+  "right6": {
+    "text": "The hole leads to a ledge overlooking a room full of shiny objects scattered on the floor",
+    "choices": [
+      { "text": "Jump down", "nextScene": "right10" },
+      { "text": "Go back", "nextScene": "right3" }
+    ]
+  },
+  "right7": {
+    "text": "The light gets brighter, showing carvings on the walls of people fighting shadows",
+    "choices": [
+      { "text": "Look at the carvings", "nextScene": "right11" },
+      { "text": "Keep walking", "nextScene": "right5" }
+    ]
+  },
+  "right8": {
+    "text": "You find a narrow path along the wall that goes around the hanging strings",
+    "choices": [
+      { "text": "Take the path", "nextScene": "right12" },
+      { "text": "Go through anyway", "nextScene": "right9" }
+    ]
+  },
+  "right9": {
+    "text": "The strings stick to you as you walk, big spiders watch from the walls with many eyes",
+    "choices": [
+      { "text": "Try to dodge them", "nextScene": "right13" },
+      { "text": "Stop and watch", "nextScene": "right14" }
+    ]
+  },
+  "right10": {
+    "text": "You land in the room with shiny things, but something feels wrong, too quiet, too easy",
+    "choices": [
+      { "text": "Pick up something", "nextScene": "right15" },
+      { "text": "Look carefully", "nextScene": "right16" }
+    ]
+  },
+  "right11": {
+    "text": "The carvings show a great battle, one figure looks just like you",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "right12": {
+    "text": "The path leads to a hidden room with old weapons and armor, all covered in dust",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "right13": {
+    "text": "The spiders watch you pass, they seem curious, not mean, they let you go by",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "right14": {
+    "text": "The spiders ignore you, they seem to be guarding something behind the strings",
+    "choices": [
+      { "text": "Keep going", "nextScene": "right17" },
+      { "text": "Turn back", "nextScene": "right5" }
+    ]
+  },
+  "right15": {
+    "text": "As you touch something, the floor starts to shake, its a trap, you barely get away",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "right16": {
+    "text": "You find hidden wires and plates, the shiny things were bait to catch the unwary",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  },
+  "right17": {
+    "text": "Past the strings is a room with old treasures, the spiders nod as you enter, like they approve",
+    "choices": [
+      { "text": "Start over", "nextScene": "start" }
+    ]
+  }
+}

@@ -72,32 +72,32 @@
   "left10": {
     "text": "The ghost lets out a soft moan and fades away, the room feels empty now",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "left11": {
     "text": "The ghost listens, in a whispery voice it says, many have come here, few leave the same",
     "choices": [
       { "text": "Ask what it means", "nextScene": "left14" },
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "left12": {
     "text": "The stone shows you blurry pictures of the past, old people studying in these rooms",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "left13": {
     "text": "The book shows maps of tunnels and warnings about things that live in the dark",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "left14": {
     "text": "The ghost sighs, power changes people, be careful what you seek, then it vanishes",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "right1": {
@@ -173,19 +173,19 @@
   "right11": {
     "text": "The carvings show a great battle, one figure looks just like you",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "right12": {
     "text": "The path leads to a hidden room with old weapons and armor, all covered in dust",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "right13": {
     "text": "The spiders watch you pass, they seem curious, not mean, they let you go by",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "right14": {
@@ -198,19 +198,26 @@
   "right15": {
     "text": "As you touch something, the floor starts to shake, its a trap, you barely get away",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "right16": {
     "text": "You find hidden wires and plates, the shiny things were bait to catch the unwary",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
     ]
   },
   "right17": {
     "text": "Past the strings is a room with old treasures, the spiders nod as you enter, like they approve",
     "choices": [
-      { "text": "Start over", "nextScene": "start" }
+      { "text": "Look around", "nextScene": "door_appears" }
+    ]
+  },
+  "door_appears": {
+    "text": "As you look around, a door materializes from thin air right before your eyes. It shimmers faintly, as if reality itself is bending to create this passage.",
+    "choices": [
+      { "text": "Enter the door", "nextScene": "start" },
+      { "text": "Walk away", "nextScene": "start" }
     ]
   }
 }

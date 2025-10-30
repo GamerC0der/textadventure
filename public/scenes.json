@@ -24,7 +24,8 @@
     "text": "The path opens into a small room, a cold breeze blows, something feels like its watching you",
     "choices": [
       { "text": "Look around the room", "nextScene": "left5" },
-      { "text": "Find another way", "nextScene": "left6" }
+      { "text": "Find another way", "nextScene": "left6" },
+      { "text": "Confront whatever is watching", "nextScene": "left_battle" }
     ]
   },
   "left4": {
@@ -222,7 +223,7 @@
     ]
   },
   "door_opened": {
-    "text": "You push open the mysterious door and step through. The air feels different here , warmer, more alive. In the center of this new room stands a magnificent treasure chest, its golden surface gleaming in the dim light.",
+    "text": "You push open the mysterious door and step through. The air feels different here, warmer, more alive. In the center of this new room stands a magnificent treasure chest, its golden surface gleaming in the dim light.",
     "choices": [
       { "text": "Open the chest", "nextScene": "chest_opened" },
       { "text": "Stay put", "nextScene": "door_opened" }

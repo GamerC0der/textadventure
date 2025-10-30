@@ -18,6 +18,7 @@ type Scene = {
 type BattleState = {
   inBattle: boolean;
   playerHealth: number;
+  enemyMaxHealth: number;
   enemyHealth: number;
   enemyName: string;
   battleLog: string[];
@@ -33,6 +34,7 @@ export default function Home() {
   const [battle, setBattle] = useState<BattleState>({
     inBattle: false,
     playerHealth: 100,
+    enemyMaxHealth: 0,
     enemyHealth: 0,
     enemyName: '',
     battleLog: [],
@@ -56,6 +58,7 @@ export default function Home() {
     setBattle({
       inBattle: true,
       playerHealth: 100,
+      enemyMaxHealth: enemyHealth,
       enemyHealth,
       enemyName,
       battleLog: [`A ${enemyName} appears!`],
@@ -114,6 +117,8 @@ export default function Home() {
   const handleChoice = (nextScene: string) => {
     if (nextScene === 'spider_battle') {
       startBattle('Giant Spider', 60);
+    } else if (nextScene === 'left_battle') {
+      startBattle('Shadow Wraith', 75);
     } else {
       setCurrentScene(nextScene);
       router.push(`?scene=${nextScene}`);
@@ -160,7 +165,7 @@ export default function Home() {
                 color: "#ff6b6b",
               }}
             >
-              ⚔️ BATTLE: GIANT SPIDER ⚔️
+              ⚔️ BATTLE: {battle.enemyName.toUpperCase()} ⚔️
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "30px" }}>
@@ -194,12 +199,12 @@ export default function Home() {
                   backgroundColor: "black",
                 }}
               >
-                <div style={{ fontSize: "20px", marginBottom: "10px" }}>👹 GIANT SPIDER</div>
-                <div style={{ fontSize: "18px" }}>HP: {battle.enemyHealth}/60</div>
+                <div style={{ fontSize: "20px", marginBottom: "10px" }}>👹 {battle.enemyName.toUpperCase()}</div>
+                <div style={{ fontSize: "18px" }}>HP: {battle.enemyHealth}/{battle.enemyMaxHealth}</div>
                 <div style={{ width: "200px", height: "10px", backgroundColor: "#333", borderRadius: "5px", marginTop: "5px" }}>
                   <div
                     style={{
-                      width: `${(battle.enemyHealth / 60) * 100}%`,
+                      width: `${(battle.enemyHealth / battle.enemyMaxHealth) * 100}%`,
                       height: "100%",
                       backgroundColor: "#f44336",
                       borderRadius: "5px",

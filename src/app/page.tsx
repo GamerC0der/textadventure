@@ -143,15 +143,22 @@ export default function Home() {
 
       <main
         style={{
-          minHeight: "100vh",
+          height: "100vh",
           backgroundColor: "black",
           color: "white",
           fontFamily: "'Courier New', monospace",
+          position: "relative",
+          padding: "40px",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          padding: "40px",
+            minHeight: "100vh",
         }}
       >
         {battle.inBattle ? (
@@ -291,6 +298,30 @@ export default function Home() {
             </div>
           </>
         )}
+        </div>
+
+        <Link href="/code">
+          <button
+            style={{
+              position: "absolute",
+              bottom: "20px",
+              left: "20px",
+              fontSize: "16px",
+              color: "white",
+              backgroundColor: "transparent",
+              border: "2px solid #61dafb",
+              padding: "10px 20px",
+              borderRadius: "25px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              fontFamily: "'Courier New', monospace",
+            }}
+          >
+            Make Your Own
+          </button>
+        </Link>
       </main>
     </>
   );

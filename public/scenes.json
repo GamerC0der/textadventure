@@ -160,7 +160,8 @@
     "text": "The strings stick to you as you walk, big spiders watch from the walls with many eyes",
     "choices": [
       { "text": "Try to dodge them", "nextScene": "right13" },
-      { "text": "Stop and watch", "nextScene": "right14" }
+      { "text": "Stop and watch", "nextScene": "right14" },
+      { "text": "Fight the spiders", "nextScene": "spider_battle" }
     ]
   },
   "right10": {
@@ -216,8 +217,34 @@
   "door_appears": {
     "text": "As you look around, a door materializes from thin air right before your eyes. It shimmers faintly, as if reality itself is bending to create this passage.",
     "choices": [
-      { "text": "Enter the door", "nextScene": "start" },
+      { "text": "Enter the door", "nextScene": "door_opened" },
       { "text": "Walk away", "nextScene": "start" }
+    ]
+  },
+  "door_opened": {
+    "text": "You push open the mysterious door and step through. The air feels different here , warmer, more alive. In the center of this new room stands a magnificent treasure chest, its golden surface gleaming in the dim light.",
+    "choices": [
+      { "text": "Open the chest", "nextScene": "chest_opened" },
+      { "text": "Stay put", "nextScene": "door_opened" }
+    ]
+  },
+  "chest_opened": {
+    "text": "You lift the heavy lid of the treasure chest. Inside, nestled among some gold coins, you find a small iron key and a folded piece of parchment paper.",
+    "choices": [
+      { "text": "Examine the paper", "nextScene": "paper_examined" }
+    ]
+  },
+  "paper_examined": {
+    "text": "You read: To exit the house you find yourself in, find four iron keys, it will be hard but you must prevail or else.",
+    "choices": [
+      { "text": "Continue", "nextScene": "hallway_continue" }
+    ]
+  },
+  "hallway_continue": {
+    "text": "The corridor feels eerily familiar yet different, an unnatural chill hangs in the air, mysterious shapes move along the walls, two passages await your decision, one shrouded in darkness and tight, one spacious but foreboding",
+    "choices": [
+      { "text": "Turn left down the tight passage", "nextScene": "left1" },
+      { "text": "Turn right toward the spacious path", "nextScene": "right1" }
     ]
   }
 }

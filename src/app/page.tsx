@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Head from "next/head";
 
@@ -14,10 +15,29 @@ type Scene = {
   choices: Choice[];
 };
 
+type BattleState = {
+  inBattle: boolean;
+  playerHealth: number;
+  enemyHealth: number;
+  enemyName: string;
+  battleLog: string[];
+  turn: 'player' | 'enemy';
+};
+
 export default function Home() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [started, setStarted] = useState(false);
   const [currentScene, setCurrentScene] = useState<string>('left1');
   const [scenes, setScenes] = useState<Record<string, Scene>>({});
+  const [battle, setBattle] = useState<BattleState>({
+    inBattle: false,
+    playerHealth: 100,
+    enemyHealth: 0,
+    enemyName: '',
+    battleLog: [],
+    turn: 'player'
+  });
 
   useEffect(() => {
     fetch('/scenes.json')
@@ -25,8 +45,79 @@ export default function Home() {
       .then(data => setScenes(data));
   }, []);
 
+  useEffect(() => {
+    const sceneParam = searchParams.get('scene');
+    if (sceneParam && scenes[sceneParam]) {
+      setCurrentScene(sceneParam);
+    }
+  }, [searchParams, scenes]);
+
+  const startBattle = (enemyName: string, enemyHealth: number) => {
+    setBattle({
+      inBattle: true,
+      playerHealth: 100,
+      enemyHealth,
+      enemyName,
+      battleLog: [`A ${enemyName} appears!`],
+      turn: 'player'
+    });
+  };
+
+  const playerAttack = () => {
+    const damage = Math.floor(Math.random() * 20) + 10;
+    const newEnemyHealth = Math.max(0, battle.enemyHealth - damage);
+    const log = [...battle.battleLog, `You attack for ${damage} damage!`];
+
+    if (newEnemyHealth <= 0) {
+      log.push(`You defeated the ${battle.enemyName}!`);
+      setTimeout(() => {
+        setBattle(prev => ({ ...prev, inBattle: false, battleLog: [] }));
+        setCurrentScene('door_appears');
+        router.push('?scene=door_appears');
+      }, 2000);
+    }
+
+    setBattle(prev => ({
+      ...prev,
+      enemyHealth: newEnemyHealth,
+      battleLog: log,
+      turn: 'enemy'
+    }));
+
+    if (newEnemyHealth > 0) {
+      setTimeout(enemyAttack, 1000);
+    }
+  };
+
+  const enemyAttack = () => {
+    const damage = Math.floor(Math.random() * 15) + 5;
+    const newPlayerHealth = Math.max(0, battle.playerHealth - damage);
+    const log = [...battle.battleLog, `The ${battle.enemyName} attacks for ${damage} damage!`];
+
+    if (newPlayerHealth <= 0) {
+      log.push('You were defeated! Game Over.');
+      setTimeout(() => {
+        setCurrentScene('start');
+        setBattle(prev => ({ ...prev, inBattle: false, battleLog: [], playerHealth: 100 }));
+        router.push('?scene=start');
+      }, 2000);
+    }
+
+    setBattle(prev => ({
+      ...prev,
+      playerHealth: newPlayerHealth,
+      battleLog: log,
+      turn: 'player'
+    }));
+  };
+
   const handleChoice = (nextScene: string) => {
-    setCurrentScene(nextScene);
+    if (nextScene === 'spider_battle') {
+      startBattle('Giant Spider', 60);
+    } else {
+      setCurrentScene(nextScene);
+      router.push(`?scene=${nextScene}`);
+    }
   };
 
   if (Object.keys(scenes).length === 0) {
@@ -50,7 +141,7 @@ export default function Home() {
           minHeight: "100vh",
           backgroundColor: "black",
           color: "white",
-          fontFamily: "Arial, sans-serif",
+          fontFamily: "'Courier New', monospace",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -58,40 +149,143 @@ export default function Home() {
           padding: "40px",
         }}
       >
-        <div
-          style={{
-            fontSize: "24px",
-            lineHeight: "2",
-            marginBottom: "40px",
-            maxWidth: "800px",
-            textAlign: "left",
-            whiteSpace: "pre-line",
-          }}
-        >
-          {currentSceneData.text}
-        </div>
-
-        <div>
-          {currentSceneData.choices.map((choice, index) => (
-            <button
-              key={index}
-              onClick={() => handleChoice(choice.nextScene)}
+        {battle.inBattle ? (
+          <div style={{ maxWidth: "900px", width: "100%" }}>
+            <div
               style={{
-                fontSize: "18px",
-                color: "white",
-                backgroundColor: "transparent",
-                border: "1px solid white",
-                padding: "10px 20px",
-                borderRadius: "4px",
-                marginRight: index < currentSceneData.choices.length - 1 ? "20px" : "0",
-                cursor: "pointer",
-                transition: "background-color 0.3s",
+                fontSize: "28px",
+                lineHeight: "1.6",
+                marginBottom: "30px",
+                textAlign: "center",
+                color: "#ff6b6b",
               }}
             >
-              {choice.text}
-            </button>
-          ))}
-        </div>
+              ⚔️ BATTLE: GIANT SPIDER ⚔️
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "30px" }}>
+              <div
+                style={{
+                  padding: "20px",
+                  border: "2px solid #4CAF50",
+                  borderRadius: "8px",
+                  backgroundColor: "black",
+                }}
+              >
+                <div style={{ fontSize: "20px", marginBottom: "10px" }}>🛡️ PLAYER</div>
+                <div style={{ fontSize: "18px" }}>HP: {battle.playerHealth}/100</div>
+                <div style={{ width: "200px", height: "10px", backgroundColor: "#333", borderRadius: "5px", marginTop: "5px" }}>
+                  <div
+                    style={{
+                      width: `${(battle.playerHealth / 100) * 100}%`,
+                      height: "100%",
+                      backgroundColor: "#4CAF50",
+                      borderRadius: "5px",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div
+                style={{
+                  padding: "20px",
+                  border: "2px solid #f44336",
+                  borderRadius: "8px",
+                  backgroundColor: "black",
+                }}
+              >
+                <div style={{ fontSize: "20px", marginBottom: "10px" }}>👹 GIANT SPIDER</div>
+                <div style={{ fontSize: "18px" }}>HP: {battle.enemyHealth}/60</div>
+                <div style={{ width: "200px", height: "10px", backgroundColor: "#333", borderRadius: "5px", marginTop: "5px" }}>
+                  <div
+                    style={{
+                      width: `${(battle.enemyHealth / 60) * 100}%`,
+                      height: "100%",
+                      backgroundColor: "#f44336",
+                      borderRadius: "5px",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                backgroundColor: "black",
+                padding: "20px",
+                borderRadius: "8px",
+                marginBottom: "30px",
+                minHeight: "120px",
+                fontSize: "16px",
+                lineHeight: "1.6",
+              }}
+            >
+              {battle.battleLog.map((log, index) => (
+                <div key={index} style={{ marginBottom: "5px" }}>
+                  {log}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ textAlign: "center" }}>
+              <button
+                onClick={playerAttack}
+                disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
+                style={{
+                  fontSize: "20px",
+                  color: "white",
+                  backgroundColor: battle.turn === 'player' && battle.enemyHealth > 0 ? "#2196F3" : "#666",
+                  border: "none",
+                  padding: "15px 30px",
+                  borderRadius: "8px",
+                  cursor: battle.turn === 'player' && battle.enemyHealth > 0 ? "pointer" : "not-allowed",
+                  fontWeight: "bold",
+                }}
+              >
+                ⚔️ ATTACK ⚔️
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div
+              style={{
+                fontSize: "24px",
+                lineHeight: "1.8",
+                marginBottom: "40px",
+                maxWidth: "800px",
+                textAlign: "center",
+                whiteSpace: "pre-line",
+              }}
+            >
+              {currentSceneData.text}
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "15px" }}>
+              {currentSceneData.choices.map((choice, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleChoice(choice.nextScene)}
+                  style={{
+                    fontSize: "18px",
+                    color: "white",
+                    backgroundColor: "transparent",
+                    border: "2px solid #61dafb",
+                    padding: "12px 24px",
+                    borderRadius: "25px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    textTransform: "uppercase",
+                    letterSpacing: "1px",
+                    minWidth: "200px",
+                  }}
+                >
+                  {choice.text}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </main>
     </>
   );

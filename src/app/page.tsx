@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Head from "next/head";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBolt } from "@fortawesome/free-solid-svg-icons";
 
 type Choice = {
   text: string;
@@ -190,7 +192,7 @@ function Home() {
         {battle.inBattle ? (
           <div className="max-w-4xl w-full">
             <div className="text-3xl leading-relaxed mb-7.5 text-center text-red-400">
-              ⚔️ BATTLE: {battle.enemyName.toUpperCase()} ⚔️
+              <FontAwesomeIcon icon={faBolt} className="mr-2" /> BATTLE: {battle.enemyName.toUpperCase()} <FontAwesomeIcon icon={faBolt} className="ml-2" />
             </div>
 
             <div className="flex justify-between mb-7.5">
@@ -235,7 +237,7 @@ function Home() {
                     : 'bg-gray-600 text-white cursor-not-allowed'
                 }`}
               >
-                ⚔️ ATTACK ⚔️
+                <FontAwesomeIcon icon={faBolt} className="mr-2" /> ATTACK <FontAwesomeIcon icon={faBolt} className="ml-2" />
               </button>
             </div>
           </div>

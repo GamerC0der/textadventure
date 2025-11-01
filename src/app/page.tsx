@@ -48,6 +48,45 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // Load bug script and initialize bugs
+    const script = document.createElement('script');
+    script.src = '/bug.js';
+    script.onload = () => {
+      // Initialize bugs after script loads
+      if (typeof window !== 'undefined' && (window as any).BugController) {
+        new (window as any).BugController({
+          minBugs: 3,
+          maxBugs: 8,
+          mouseOver: 'fly',
+          canFly: true,
+          canDie: false,
+          zoom: 20
+        });
+
+        new (window as any).SpiderController({
+          minDelay: 0,
+          maxDelay: 3000,
+          minBugs: 2,
+          maxBugs: 4,
+          mouseOver: 'random',
+          canFly: false,
+          canDie: false,
+          zoom: 15
+        });
+      }
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script when component unmounts
+      const existingScript = document.querySelector('script[src="/bug.js"]');
+      if (existingScript) {
+        document.head.removeChild(existingScript);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     const sceneParam = searchParams.get('scene');
     if (sceneParam && scenes[sceneParam]) {
       setCurrentScene(sceneParam);
@@ -119,6 +158,12 @@ export default function Home() {
       startBattle('Giant Spider', 60);
     } else if (nextScene === 'left_battle') {
       startBattle('Shadow Wraith', 75);
+    } else if (nextScene === 'make_your_own') {
+      window.location.href = '/code';
+      return;
+    } else if (nextScene === 'go_home') {
+      window.location.href = '/';
+      return;
     } else {
       setCurrentScene(nextScene);
       router.push(`?scene=${nextScene}`);

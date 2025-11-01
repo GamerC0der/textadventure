@@ -236,9 +236,10 @@
     ]
   },
   "paper_examined": {
-    "text": "You read: To exit the house you find yourself in, find four iron keys, it will be hard but you must prevail or else.",
+    "text": "You can even make your own game like this, spooky right?",
     "choices": [
-      { "text": "Continue", "nextScene": "hallway_continue" }
+      { "text": "Make your own!", "nextScene": "make_your_own" },
+      { "text": "Home", "nextScene": "go_home" }
     ]
   },
   "hallway_continue": {

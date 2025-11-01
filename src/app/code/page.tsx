@@ -1,7 +1,3 @@
-export const metadata = {
-  title: 'Edit',
-};
-
 "use client";
 
 import { useCallback, useState, useMemo } from 'react';
@@ -367,7 +363,7 @@ export default function CodeEditor() {
       <div style={{
         position: 'absolute',
         top: '10px',
-        left: '10px',
+        right: '10px',
         zIndex: 10,
         display: 'flex',
         gap: '10px'

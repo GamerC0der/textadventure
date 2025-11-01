@@ -51,6 +51,13 @@ export default function PlayAdventure() {
   }, [searchParams]);
 
   const handleChoice = (nextScene: string) => {
+    if (nextScene === 'make_your_own') {
+      window.location.href = '/code';
+      return;
+    } else if (nextScene === 'go_home') {
+      window.location.href = '/';
+      return;
+    }
     setCurrentScene(nextScene);
   };
 
@@ -145,6 +152,7 @@ export default function PlayAdventure() {
           <button
             key={index}
             onClick={() => handleChoice(choice.nextScene)}
+            
             style={{
               fontSize: "18px",
               color: "white",

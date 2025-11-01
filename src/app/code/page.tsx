@@ -848,6 +848,28 @@ export default function CodeEditor() {
       <div style={{
         position: 'absolute',
         top: '10px',
+        left: '10px',
+        zIndex: 10
+      }}>
+        <button
+          onClick={() => router.back()}
+          style={{
+            background: '#333',
+            color: 'white',
+            border: `1px solid ${accentColor}`,
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontFamily: "'Courier New', monospace",
+          }}
+        >
+          ← Back
+        </button>
+      </div>
+      <div style={{
+        position: 'absolute',
+        top: '10px',
         right: '10px',
         zIndex: 10,
         display: 'flex',

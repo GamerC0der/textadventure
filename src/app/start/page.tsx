@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useEffect } from "react";
 import Head from "next/head";
 
 type Choice = {
@@ -15,7 +14,6 @@ type Scene = {
 };
 
 export default function Home() {
-  const [started, setStarted] = useState(false);
   const [currentScene, setCurrentScene] = useState<string>('left1');
   const [scenes, setScenes] = useState<Record<string, Scene>>({});
 
@@ -45,48 +43,17 @@ export default function Home() {
         />
       </Head>
 
-      <main
-        style={{
-          minHeight: "100vh",
-          backgroundColor: "black",
-          color: "white",
-          fontFamily: "Arial, sans-serif",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "40px",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "24px",
-            lineHeight: "2",
-            marginBottom: "40px",
-            maxWidth: "800px",
-            textAlign: "left",
-            whiteSpace: "pre-line",
-          }}
-        >
+      <main className="min-h-screen bg-black text-white font-sans flex flex-col justify-center items-center p-10">
+        <div className="text-2xl leading-loose mb-10 max-w-2xl text-left whitespace-pre-line">
           {currentSceneData.text}
         </div>
 
-        <div>
+        <div className="flex flex-wrap gap-5">
           {currentSceneData.choices.map((choice, index) => (
             <button
               key={index}
               onClick={() => handleChoice(choice.nextScene)}
-              style={{
-                fontSize: "18px",
-                color: "white",
-                backgroundColor: "transparent",
-                border: "1px solid white",
-                padding: "10px 20px",
-                borderRadius: "4px",
-                marginRight: index < currentSceneData.choices.length - 1 ? "20px" : "0",
-                cursor: "pointer",
-                transition: "background-color 0.3s",
-              }}
+              className="text-lg text-white bg-transparent border border-white px-5 py-2.5 rounded hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer"
             >
               {choice.text}
             </button>

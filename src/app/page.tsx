@@ -28,7 +28,6 @@ type BattleState = {
 function Home() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [started, setStarted] = useState(false);
   const [currentScene, setCurrentScene] = useState<string>('left1');
   const [scenes, setScenes] = useState<Record<string, Scene>>({});
   const [battle, setBattle] = useState<BattleState>({
@@ -186,118 +185,55 @@ function Home() {
         />
       </Head>
 
-      <main
-        style={{
-          height: "100vh",
-          backgroundColor: "black",
-          color: "white",
-          fontFamily: "'Courier New', monospace",
-          position: "relative",
-          padding: "40px",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-            minHeight: "100vh",
-        }}
-      >
+      <main className="h-screen bg-black text-white font-mono relative p-10 overflow-hidden">
+        <div className="flex flex-col justify-center items-center min-h-screen">
         {battle.inBattle ? (
-          <div style={{ maxWidth: "900px", width: "100%" }}>
-            <div
-              style={{
-                fontSize: "28px",
-                lineHeight: "1.6",
-                marginBottom: "30px",
-                textAlign: "center",
-                color: "#ff6b6b",
-              }}
-            >
+          <div className="max-w-4xl w-full">
+            <div className="text-3xl leading-relaxed mb-7.5 text-center text-red-400">
               ⚔️ BATTLE: {battle.enemyName.toUpperCase()} ⚔️
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "30px" }}>
-              <div
-                style={{
-                  padding: "20px",
-                  border: "2px solid #4CAF50",
-                  borderRadius: "8px",
-                  backgroundColor: "black",
-                }}
-              >
-                <div style={{ fontSize: "20px", marginBottom: "10px" }}>🛡️ PLAYER</div>
-                <div style={{ fontSize: "18px" }}>HP: {battle.playerHealth}/100</div>
-                <div style={{ width: "200px", height: "10px", backgroundColor: "#333", borderRadius: "5px", marginTop: "5px" }}>
+            <div className="flex justify-between mb-7.5">
+              <div className="p-5 border-2 border-green-500 rounded-lg bg-black">
+                <div className="text-xl mb-2.5">🛡️ PLAYER</div>
+                <div className="text-lg">HP: {battle.playerHealth}/100</div>
+                <div className="w-50 h-2.5 bg-gray-600 rounded mt-1.5">
                   <div
-                    style={{
-                      width: `${(battle.playerHealth / 100) * 100}%`,
-                      height: "100%",
-                      backgroundColor: "#4CAF50",
-                      borderRadius: "5px",
-                    }}
+                    className="h-full bg-green-500 rounded"
+                    style={{ width: `${(battle.playerHealth / 100) * 100}%` }}
                   />
                 </div>
               </div>
 
-              <div
-                style={{
-                  padding: "20px",
-                  border: "2px solid #f44336",
-                  borderRadius: "8px",
-                  backgroundColor: "black",
-                }}
-              >
-                <div style={{ fontSize: "20px", marginBottom: "10px" }}>👹 {battle.enemyName.toUpperCase()}</div>
-                <div style={{ fontSize: "18px" }}>HP: {battle.enemyHealth}/{battle.enemyMaxHealth}</div>
-                <div style={{ width: "200px", height: "10px", backgroundColor: "#333", borderRadius: "5px", marginTop: "5px" }}>
+              <div className="p-5 border-2 border-red-500 rounded-lg bg-black">
+                <div className="text-xl mb-2.5">👹 {battle.enemyName.toUpperCase()}</div>
+                <div className="text-lg">HP: {battle.enemyHealth}/{battle.enemyMaxHealth}</div>
+                <div className="w-50 h-2.5 bg-gray-600 rounded mt-1.5">
                   <div
-                    style={{
-                      width: `${(battle.enemyHealth / battle.enemyMaxHealth) * 100}%`,
-                      height: "100%",
-                      backgroundColor: "#f44336",
-                      borderRadius: "5px",
-                    }}
+                    className="h-full bg-red-500 rounded"
+                    style={{ width: `${(battle.enemyHealth / battle.enemyMaxHealth) * 100}%` }}
                   />
                 </div>
               </div>
             </div>
 
-            <div
-              style={{
-                backgroundColor: "black",
-                padding: "20px",
-                borderRadius: "8px",
-                marginBottom: "30px",
-                minHeight: "120px",
-                fontSize: "16px",
-                lineHeight: "1.6",
-              }}
-            >
+            <div className="bg-black p-5 rounded-lg mb-7.5 min-h-30 text-base leading-relaxed">
               {battle.battleLog.map((log, index) => (
-                <div key={index} style={{ marginBottom: "5px" }}>
+                <div key={index} className="mb-1.25">
                   {log}
                 </div>
               ))}
             </div>
 
-            <div style={{ textAlign: "center" }}>
+            <div className="text-center">
               <button
                 onClick={playerAttack}
                 disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
-                style={{
-                  fontSize: "20px",
-                  color: "white",
-                  backgroundColor: battle.turn === 'player' && battle.enemyHealth > 0 ? "#2196F3" : "#666",
-                  border: "none",
-                  padding: "15px 30px",
-                  borderRadius: "8px",
-                  cursor: battle.turn === 'player' && battle.enemyHealth > 0 ? "pointer" : "not-allowed",
-                  fontWeight: "bold",
-                }}
+                className={`text-xl px-7.5 py-3.75 rounded-lg font-bold ${
+                  battle.turn === 'player' && battle.enemyHealth > 0
+                    ? 'bg-blue-500 text-white cursor-pointer hover:bg-blue-600'
+                    : 'bg-gray-600 text-white cursor-not-allowed'
+                }`}
               >
                 ⚔️ ATTACK ⚔️
               </button>
@@ -305,37 +241,16 @@ function Home() {
           </div>
         ) : (
           <>
-            <div
-              style={{
-                fontSize: "24px",
-                lineHeight: "1.8",
-                marginBottom: "40px",
-                maxWidth: "800px",
-                textAlign: "center",
-                whiteSpace: "pre-line",
-              }}
-            >
+            <div className="text-2xl leading-relaxed mb-10 max-w-2xl text-center whitespace-pre-line">
               {currentSceneData.text}
             </div>
 
-            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "15px" }}>
+            <div className="flex flex-wrap justify-center gap-3.5">
               {currentSceneData.choices.map((choice, index) => (
                 <button
                   key={index}
                   onClick={() => handleChoice(choice.nextScene)}
-                  style={{
-                    fontSize: "18px",
-                    color: "white",
-                    backgroundColor: "transparent",
-                    border: "2px solid #61dafb",
-                    padding: "12px 24px",
-                    borderRadius: "25px",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                    textTransform: "uppercase",
-                    letterSpacing: "1px",
-                    minWidth: "200px",
-                  }}
+                  className="text-lg text-white bg-transparent border-2 border-blue-400 px-6 py-3 rounded-full cursor-pointer font-bold uppercase tracking-wide min-w-50 hover:bg-blue-400 hover:text-black transition-colors duration-300"
                 >
                   {choice.text}
                 </button>
@@ -346,24 +261,7 @@ function Home() {
         </div>
 
         <Link href="/code">
-          <button
-            style={{
-              position: "absolute",
-              bottom: "20px",
-              left: "20px",
-              fontSize: "16px",
-              color: "white",
-              backgroundColor: "transparent",
-              border: "2px solid #61dafb",
-              padding: "10px 20px",
-              borderRadius: "25px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              textTransform: "uppercase",
-              letterSpacing: "1px",
-              fontFamily: "'Courier New', monospace",
-            }}
-          >
+          <button className="absolute bottom-5 left-5 text-base text-white bg-transparent border-2 border-blue-400 px-5 py-2.5 rounded-full cursor-pointer font-bold uppercase tracking-wide font-mono hover:bg-blue-400 hover:text-black transition-colors duration-300">
             Make Your Own
           </button>
         </Link>

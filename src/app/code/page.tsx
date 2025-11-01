@@ -22,33 +22,13 @@ function ColorPickerNode({ data }: { data: any }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div
-      style={{
-        background: '#1a1a1a',
-        border: `2px solid ${accentColor}`,
-        borderRadius: '8px',
-        padding: '15px',
-        color: 'white',
-        fontFamily: "'Courier New', monospace",
-        minWidth: '200px',
-        maxWidth: '250px',
-      }}
-    >
-      <div style={{
-        fontSize: '16px',
-        fontWeight: 'bold',
-        marginBottom: '10px',
-        color: accentColor
-      }}>
+    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white font-mono min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
+      <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
         Theme Settings
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <div style={{
-          fontSize: '12px',
-          color: '#ccc',
-          marginBottom: '5px'
-        }}>
+      <div className="mb-3.75">
+        <div className="text-xs text-gray-400 mb-1.25">
           Tab Title
         </div>
         <input
@@ -56,75 +36,31 @@ function ColorPickerNode({ data }: { data: any }) {
           value={title || 'My Adventure'}
           onChange={(e) => onTitleChange?.(e.target.value)}
           placeholder="Enter tab title..."
-          style={{
-            width: '100%',
-            background: '#111',
-            border: '1px solid #333',
-            borderRadius: '4px',
-            color: 'white',
-            fontFamily: "'Courier New', monospace",
-            fontSize: '12px',
-            padding: '6px 8px',
-            boxSizing: 'border-box'
-          }}
+          className="w-full bg-gray-800 border border-gray-600 rounded text-white font-mono text-xs px-2 py-1.5 box-border"
         />
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <div style={{
-          fontSize: '12px',
-          color: '#ccc',
-          marginBottom: '5px'
-        }}>
+      <div className="mb-3.75">
+        <div className="text-xs text-gray-400 mb-1.25">
           Enable Spiders
         </div>
         <label
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            cursor: 'pointer',
-            padding: '8px 12px',
-            borderRadius: '6px',
-            backgroundColor: isHovered ? '#333' : '#2a2a2a',
-            border: `1px solid ${isHovered ? '#555' : '#444'}`,
-            transition: 'all 0.2s ease',
-          }}
+          className={`flex items-center gap-3 cursor-pointer p-2 rounded border transition-all duration-200 ${
+            isHovered ? 'bg-gray-700 border-gray-500' : 'bg-gray-800 border-gray-600'
+          }`}
         >
-          <div style={{
-            position: 'relative',
-            width: '20px',
-            height: '20px'
-          }}>
+          <div className="relative w-5 h-5">
             <input
               type="checkbox"
               checked={spiders || false}
               onChange={(e) => onSpidersChange?.(e.target.checked)}
-              style={{
-                position: 'absolute',
-                opacity: 0,
-                width: '100%',
-                height: '100%',
-                margin: 0,
-                cursor: 'pointer'
-              }}
+              className="absolute opacity-0 w-full h-full m-0 cursor-pointer"
             />
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '20px',
-              height: '20px',
-              border: `2px solid ${spiders ? accentColor : '#666'}`,
-              borderRadius: '4px',
-              backgroundColor: spiders ? accentColor : 'transparent',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
+            <div className={`absolute top-0 left-0 w-5 h-5 border-2 rounded flex items-center justify-center transition-all duration-200 ${
+              spiders ? '' : 'border-gray-500 bg-transparent'
+            }`} style={{ borderColor: spiders ? accentColor : '', backgroundColor: spiders ? accentColor : 'transparent' }}>
               {spiders && (
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 6L9 17L4 12" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -132,33 +68,21 @@ function ColorPickerNode({ data }: { data: any }) {
               )}
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FontAwesomeIcon icon={faSpider} style={{ fontSize: '16px', color: '#ccc' }} />
-            <span style={{ fontSize: '14px', color: '#ccc' }}>Enable Spiders</span>
+          <div className="flex items-center gap-2">
+            <FontAwesomeIcon icon={faSpider} className="text-base text-gray-400" />
+            <span className="text-sm text-gray-400">Enable Spiders</span>
           </div>
         </label>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div className="flex items-center gap-2.5">
         <input
           type="color"
           value={accentColor}
           onChange={(e) => onChange?.(e.target.value)}
-          style={{
-            width: '60px',
-            height: '40px',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            background: 'none',
-            outline: 'none'
-          }}
+          className="w-15 h-10 border-none rounded cursor-pointer bg-none outline-none"
         />
-        <div style={{
-          fontSize: '12px',
-          color: '#ccc',
-          flex: 1
-        }}>
+        <div className="text-xs text-gray-400 flex-1">
           Click to change accent color
         </div>
       </div>
@@ -197,19 +121,8 @@ function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: strin
   };
 
   return (
-    <div
-      style={{
-        background: '#1a1a1a',
-        border: `2px solid ${accentColor}`,
-        borderRadius: '8px',
-        padding: '15px',
-        color: 'white',
-        fontFamily: "'Courier New', monospace",
-        minWidth: '300px',
-        maxWidth: '400px',
-      }}
-    >
-      <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px', color: accentColor }}>
+    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white font-mono min-w-75 max-w-100" style={{ borderColor: accentColor }}>
+      <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
         Scene: {id}
       </div>
 
@@ -228,99 +141,47 @@ function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: strin
               handleTextChange(text);
             }
           }}
-          style={{
-            width: '100%',
-            background: '#111',
-            border: '1px solid #333',
-            borderRadius: '4px',
-            color: 'white',
-            fontFamily: "'Courier New', monospace",
-            fontSize: '14px',
-            padding: '8px',
-            resize: 'vertical',
-            minHeight: '60px',
-          }}
+          className="w-full bg-gray-800 border border-gray-600 rounded text-white font-mono text-sm p-2 resize-vertical min-h-15"
           autoFocus
         />
       ) : (
         <div
           onClick={() => setIsEditing(true)}
-          style={{
-            cursor: 'pointer',
-            whiteSpace: 'pre-wrap',
-            lineHeight: '1.4',
-            marginBottom: '10px',
-            minHeight: '40px',
-          }}
+          className="cursor-pointer whitespace-pre-wrap leading-relaxed mb-2.5 min-h-10"
         >
           {text || 'Click to edit scene text...'}
         </div>
       )}
 
-      <div style={{ marginBottom: '10px' }}>
+      <div className="mb-2.5">
         <button
           onClick={addChoice}
-          style={{
-            background: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            padding: '5px 10px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '12px',
-            fontFamily: "'Courier New', monospace",
-          }}
+          className="bg-green-500 text-white border-none px-2.5 py-1.25 rounded cursor-pointer text-xs font-mono"
         >
           + Add Choice
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div className="flex flex-col gap-2">
         {choices.map((choice: any, index: number) => (
-          <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div key={index} className="flex items-center gap-1.25">
             <input
               type="text"
               value={choice.text}
               onChange={(e) => updateChoice(index, 'text', e.target.value)}
               placeholder="Choice text"
-              style={{
-                flex: 1,
-                background: '#111',
-                border: '1px solid #333',
-                borderRadius: '4px',
-                color: 'white',
-                fontFamily: "'Courier New', monospace",
-                fontSize: '12px',
-                padding: '4px 8px',
-              }}
+              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white font-mono text-xs px-2 py-1"
             />
             <input
               type="text"
               value={choice.nextScene}
               onChange={(e) => updateChoice(index, 'nextScene', e.target.value)}
               placeholder="Target scene"
-              style={{
-                flex: 1,
-                background: '#111',
-                border: '1px solid #333',
-                borderRadius: '4px',
-                color: 'white',
-                fontFamily: "'Courier New', monospace",
-                fontSize: '12px',
-                padding: '4px 8px',
-              }}
+              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white font-mono text-xs px-2 py-1"
             />
             <button
               onClick={() => deleteChoice(index)}
-              style={{
-                background: '#f44336',
-                color: 'white',
-                border: 'none',
-                padding: '4px 8px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '12px',
-              }}
+              className="bg-red-500 text-white border-none px-2 py-1 rounded cursor-pointer text-xs"
             >
               ×
             </button>
@@ -844,81 +705,35 @@ export default function CodeEditor() {
   }), [setNodes, accentColor, tabTitle, spiders]);
 
   return (
-    <div style={{ height: '100vh', backgroundColor: '#000' }}>
-      <div style={{
-        position: 'absolute',
-        top: '10px',
-        left: '10px',
-        zIndex: 10
-      }}>
+    <div className="h-screen bg-black">
+      <div className="absolute top-2.5 left-2.5 z-10">
         <button
           onClick={() => router.back()}
-          style={{
-            background: '#333',
-            color: 'white',
-            border: `1px solid ${accentColor}`,
-            padding: '8px 16px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontFamily: "'Courier New', monospace",
-          }}
+          className="bg-gray-700 text-white border px-4 py-2 rounded cursor-pointer font-bold font-mono"
+          style={{ borderColor: accentColor }}
         >
           ← Back
         </button>
       </div>
-      <div style={{
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        zIndex: 10,
-        display: 'flex',
-        gap: '10px'
-      }}>
+      <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">
         <button
           onClick={addNode}
-          style={{
-            background: accentColor,
-            color: 'black',
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontFamily: "'Courier New', monospace",
-          }}
+          className="px-4 py-2 rounded cursor-pointer font-bold font-mono text-black"
+          style={{ background: accentColor }}
         >
           + Add Scene
         </button>
         <button
           onClick={startPlay}
-          style={{
-            background: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontFamily: "'Courier New', monospace",
-          }}
+          className="bg-green-500 text-white border-none px-4 py-2 rounded cursor-pointer font-bold font-mono"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginRight: '8px'}}><path d="M8 5v14l11-7z" fill="currentColor"/></svg>Play Adventure
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2 inline"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>Play Adventure
         </button>
         <button
           onClick={downloadAdventure}
-          style={{
-            background: '#2196F3',
-            color: 'white',
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontFamily: "'Courier New', monospace",
-          }}
+          className="bg-blue-500 text-white border-none px-4 py-2 rounded cursor-pointer font-bold font-mono"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginRight: '8px'}}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/></svg>Download HTML
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2 inline"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/></svg>Download HTML
         </button>
       </div>
 
@@ -930,9 +745,9 @@ export default function CodeEditor() {
         onConnect={onConnect}
         nodeTypes={nodeTypesWithCallbacks}
         fitView
-        style={{ backgroundColor: '#000' }}
+        className="bg-black"
       >
-        <Controls style={{ backgroundColor: '#1a1a1a', border: `1px solid ${accentColor}` }} />
+        <Controls className="bg-gray-900 border" style={{ borderColor: accentColor }} />
         <Background color="#333" gap={16} />
       </ReactFlow>
     </div>

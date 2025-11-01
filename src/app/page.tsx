@@ -47,29 +47,32 @@ function Home() {
   }, []);
 
   useEffect(() => {
+    const bugConfig = {
+      minBugs: 3,
+      maxBugs: 8,
+      mouseOver: 'fly' as const,
+      canFly: true,
+      canDie: false,
+      zoom: 20
+    };
+
+    const spiderConfig = {
+      minDelay: 0,
+      maxDelay: 3000,
+      minBugs: 2,
+      maxBugs: 4,
+      mouseOver: 'random' as const,
+      canFly: false,
+      canDie: false,
+      zoom: 15
+    };
+
     const script = document.createElement('script');
     script.src = '/bug.js';
     script.onload = () => {
       if (typeof window !== 'undefined' && (window as any).BugController) {
-        new (window as any).BugController({
-          minBugs: 3,
-          maxBugs: 8,
-          mouseOver: 'fly',
-          canFly: true,
-          canDie: false,
-          zoom: 20
-        });
-
-        new (window as any).SpiderController({
-          minDelay: 0,
-          maxDelay: 3000,
-          minBugs: 2,
-          maxBugs: 4,
-          mouseOver: 'random',
-          canFly: false,
-          canDie: false,
-          zoom: 15
-        });
+        new (window as any).BugController(bugConfig);
+        new (window as any).SpiderController(spiderConfig);
       }
     };
     document.head.appendChild(script);

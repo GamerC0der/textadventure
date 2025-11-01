@@ -180,7 +180,7 @@ function Home() {
   return (
     <>
       <Head>
-        <title>Text Adventure Game</title>
+        <title>SpookyStudio</title>
         <meta
           name="description"
           content="Embark on a thrilling text-based journey."

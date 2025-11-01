@@ -14,9 +14,12 @@ import ReactFlow, {
   NodeTypes,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpider } from '@fortawesome/free-solid-svg-icons';
 
 function ColorPickerNode({ data }: { data: any }) {
-  const { accentColor, title, onChange, onTitleChange } = data;
+  const { accentColor, title, spiders, onChange, onTitleChange, onSpidersChange } = data;
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
@@ -37,7 +40,7 @@ function ColorPickerNode({ data }: { data: any }) {
         marginBottom: '10px',
         color: accentColor
       }}>
-        Theme Color
+        Theme Settings
       </div>
 
       <div style={{ marginBottom: '15px' }}>
@@ -65,6 +68,75 @@ function ColorPickerNode({ data }: { data: any }) {
             boxSizing: 'border-box'
           }}
         />
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <div style={{
+          fontSize: '12px',
+          color: '#ccc',
+          marginBottom: '5px'
+        }}>
+          Enable Spiders
+        </div>
+        <label
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            cursor: 'pointer',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            backgroundColor: isHovered ? '#333' : '#2a2a2a',
+            border: `1px solid ${isHovered ? '#555' : '#444'}`,
+            transition: 'all 0.2s ease',
+          }}
+        >
+          <div style={{
+            position: 'relative',
+            width: '20px',
+            height: '20px'
+          }}>
+            <input
+              type="checkbox"
+              checked={spiders || false}
+              onChange={(e) => onSpidersChange?.(e.target.checked)}
+              style={{
+                position: 'absolute',
+                opacity: 0,
+                width: '100%',
+                height: '100%',
+                margin: 0,
+                cursor: 'pointer'
+              }}
+            />
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '20px',
+              height: '20px',
+              border: `2px solid ${spiders ? accentColor : '#666'}`,
+              borderRadius: '4px',
+              backgroundColor: spiders ? accentColor : 'transparent',
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              {spiders && (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 6L9 17L4 12" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FontAwesomeIcon icon={faSpider} style={{ fontSize: '16px', color: '#ccc' }} />
+            <span style={{ fontSize: '14px', color: '#ccc' }}>Enable Spiders</span>
+          </div>
+        </label>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -281,7 +353,7 @@ const initialNodes: Node[] = [
     id: 'color-picker',
     type: 'colorPickerNode',
     position: { x: 50, y: 25 },
-    data: { title: 'My Adventure' },
+    data: { title: 'My Adventure', spiders: false },
   },
 ];
 
@@ -294,6 +366,7 @@ export default function CodeEditor() {
   const [nodeIdCounter, setNodeIdCounter] = useState(2);
   const [accentColor, setAccentColor] = useState('#61dafb');
   const [tabTitle, setTabTitle] = useState('My Adventure');
+  const [spiders, setSpiders] = useState(false);
 
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
@@ -320,7 +393,8 @@ export default function CodeEditor() {
     const data = encodeURIComponent(JSON.stringify(scenes));
     const color = encodeURIComponent(accentColor);
     const title = encodeURIComponent(tabTitle);
-    window.open(`/play?data=${data}&color=${color}&title=${title}`, '_blank');
+    const spiderParam = spiders ? '1' : '0';
+    window.open(`/play?data=${data}&color=${color}&title=${title}&spiders=${spiderParam}`, '_blank');
   };
 
   const nodeTypesWithCallbacks = useMemo(() => ({
@@ -347,16 +421,20 @@ export default function CodeEditor() {
           ...props.data,
           accentColor,
           title: tabTitle,
+          spiders,
           onChange: (newColor: string) => {
             setAccentColor(newColor);
           },
           onTitleChange: (newTitle: string) => {
             setTabTitle(newTitle);
+          },
+          onSpidersChange: (newSpiders: boolean) => {
+            setSpiders(newSpiders);
           }
         }}
       />
     ),
-  }), [setNodes, accentColor, tabTitle]);
+  }), [setNodes, accentColor, tabTitle, spiders]);
 
   return (
     <div style={{ height: '100vh', backgroundColor: '#000' }}>

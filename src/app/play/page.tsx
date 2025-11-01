@@ -1,7 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+
+declare global {
+  interface Window {
+    SpiderController: any;
+    currentSpiderController: any;
+  }
+}
 
 type Scene = {
   text: string;
@@ -11,17 +18,19 @@ type Scene = {
   }>;
 };
 
-export default function PlayAdventure() {
+function PlayAdventure() {
   const [scenes, setScenes] = useState<Record<string, Scene>>({});
   const [currentScene, setCurrentScene] = useState<string>('start');
   const [accentColor, setAccentColor] = useState<string>('#61dafb');
   const [tabTitle, setTabTitle] = useState<string>('My Adventure');
+  const [spiders, setSpiders] = useState<boolean>(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const dataParam = searchParams.get('data');
     const colorParam = searchParams.get('color');
     const titleParam = searchParams.get('title');
+    const spidersParam = searchParams.get('spiders');
     if (dataParam) {
       try {
         const decodedData = decodeURIComponent(dataParam);
@@ -48,7 +57,51 @@ export default function PlayAdventure() {
         console.error('Failed to parse tab title:', error);
       }
     }
+    if (spidersParam) {
+      setSpiders(spidersParam === '1');
+    }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (spiders && typeof window !== 'undefined') {
+      // Load the bug.js script if not already loaded
+      if (!window.SpiderController) {
+        const script = document.createElement('script');
+        script.src = '/bug.js';
+        script.onload = () => {
+          if (window.SpiderController) {
+            const spiderController = new window.SpiderController();
+            spiderController.initialize();
+
+            // Store reference for cleanup
+            window.currentSpiderController = spiderController;
+          }
+        };
+        document.head.appendChild(script);
+      } else {
+        // Script already loaded, initialize directly
+        const spiderController = new window.SpiderController();
+        spiderController.initialize();
+
+        // Store reference for cleanup
+        window.currentSpiderController = spiderController;
+      }
+
+      return () => {
+        // Cleanup spiders when component unmounts or spiders disabled
+        if (window.currentSpiderController) {
+          window.currentSpiderController.end();
+          window.currentSpiderController = null;
+        }
+      };
+    } else {
+      // Spiders disabled, clean up
+      if (window.currentSpiderController) {
+        window.currentSpiderController.end();
+        window.currentSpiderController = null;
+      }
+    }
+  }, [spiders]);
 
   const handleChoice = (nextScene: string) => {
     if (nextScene === 'make_your_own') {
@@ -174,3 +227,13 @@ export default function PlayAdventure() {
     </main>
   );
 }
+
+function PlayAdventureWrapper() {
+  return (
+    <Suspense fallback={<div>Loading adventure...</div>}>
+      <PlayAdventure />
+    </Suspense>
+  );
+}
+
+export default PlayAdventureWrapper;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Head from "next/head";
@@ -25,7 +25,7 @@ type BattleState = {
   turn: 'player' | 'enemy';
 };
 
-export default function Home() {
+function Home() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [started, setStarted] = useState(false);
@@ -371,3 +371,13 @@ export default function Home() {
     </>
   );
 }
+
+function HomeWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Home />
+    </Suspense>
+  );
+}
+
+export default HomeWrapper;

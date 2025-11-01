@@ -228,6 +228,7 @@ export default function CodeEditor() {
   const [accentColor, setAccentColor] = useState('#61dafb');
   const [tabTitle, setTabTitle] = useState('My Adventure');
   const [spiders, setSpiders] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
@@ -256,6 +257,22 @@ export default function CodeEditor() {
     const title = encodeURIComponent(tabTitle);
     const spiderParam = spiders ? '1' : '0';
     window.open(`/play?data=${data}&color=${color}&title=${title}&spiders=${spiderParam}`, '_blank');
+  };
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleClick = () => {
+    setContextMenu(null);
+  };
+
+  const clearAll = () => {
+    setNodes([initialNodes[1]]);
+    setEdges([]);
+    setNodeIdCounter(2);
+    setContextMenu(null);
   };
 
   const downloadAdventure = () => {
@@ -705,7 +722,44 @@ export default function CodeEditor() {
   }), [setNodes, accentColor, tabTitle, spiders]);
 
   return (
-    <div className="h-screen bg-black">
+    <div className="h-screen bg-black" onContextMenu={handleContextMenu} onClick={handleClick}>
+      {contextMenu && (
+        <div
+          className="absolute z-50 bg-gray-800 border rounded shadow-lg py-1"
+          style={{
+            left: contextMenu.x,
+            top: contextMenu.y,
+            borderColor: accentColor,
+            minWidth: '150px'
+          }}
+        >
+          <button
+            onClick={() => { addNode(); setContextMenu(null); }}
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+          >
+            + Add Scene
+          </button>
+          <button
+            onClick={() => { startPlay(); setContextMenu(null); }}
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+          >
+            ▶ Play Adventure
+          </button>
+          <button
+            onClick={() => { downloadAdventure(); setContextMenu(null); }}
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+          >
+            ⬇ Download HTML
+          </button>
+          <div className="border-t border-gray-600 my-1"></div>
+          <button
+            onClick={clearAll}
+            className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700 font-mono text-sm"
+          >
+            🗑 Clear All
+          </button>
+        </div>
+      )}
       <div className="absolute top-2.5 left-2.5 z-10">
         <button
           onClick={() => router.back()}

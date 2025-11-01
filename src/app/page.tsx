@@ -153,7 +153,7 @@ function Home() {
     if (nextScene === 'spider_battle') {
       startBattle('Giant Spider', 60);
     } else if (nextScene === 'left_battle') {
-      startBattle('Shadow Wraith', 75);
+      startBattle('Spiders', 75);
     } else if (nextScene === 'make_your_own') {
       window.location.href = '/code';
       return;
@@ -258,7 +258,7 @@ function Home() {
         </div>
 
         <Link href="/code">
-          <button className="absolute bottom-5 left-5 text-base text-white bg-transparent border-2 border-blue-400 px-5 py-2.5 rounded-full cursor-pointer font-bold uppercase tracking-wide font-mono hover:bg-blue-400 hover:text-black transition-colors duration-300">
+          <button className="absolute bottom-5 left-5 text-2xl text-white bg-transparent border-2 border-blue-400 px-10 py-5 rounded-full cursor-pointer font-bold uppercase tracking-wide font-mono hover:bg-blue-400 hover:text-black transition-colors duration-300">
             Make Your Own
           </button>
         </Link>

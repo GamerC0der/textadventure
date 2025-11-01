@@ -7,7 +7,7 @@
     ]
   },
   "left1": {
-    "text": "Welcome to Game Name\n\nThe narrow path gets very dark, the walls feel close, strange marks glow faintly on the stones",
+    "text": "SpookyStudio\n\nThe narrow path gets very dark, the walls feel close, strange marks glow faintly on the stones",
     "choices": [
       { "text": "Look at the marks", "nextScene": "left2" },
       { "text": "Keep walking", "nextScene": "left3" }

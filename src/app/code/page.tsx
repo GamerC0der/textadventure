@@ -1,3 +1,7 @@
+export const metadata = {
+  title: 'Edit',
+};
+
 "use client";
 
 import { useCallback, useState, useMemo } from 'react';

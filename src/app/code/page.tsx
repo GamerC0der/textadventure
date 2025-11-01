@@ -397,6 +397,413 @@ export default function CodeEditor() {
     window.open(`/play?data=${data}&color=${color}&title=${title}&spiders=${spiderParam}`, '_blank');
   };
 
+  const downloadAdventure = () => {
+    const scenes: Record<string, any> = {};
+    nodes.forEach(node => {
+      scenes[node.id] = {
+        text: node.data.text || '',
+        choices: node.data.choices || []
+      };
+    });
+
+    const scenesJson = JSON.stringify(scenes);
+    const colorValue = accentColor;
+    const titleValue = tabTitle;
+    const spidersEnabled = spiders;
+
+    // Create standalone HTML with embedded data and logic
+    const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${titleValue}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+            background-color: black;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        .text {
+            font-size: 24px;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 800px;
+            text-align: center;
+            white-space: pre-line;
+        }
+
+        .choices {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            font-size: 18px;
+            color: white;
+            background-color: transparent;
+            border: 2px solid ${colorValue};
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 200px;
+            transition: background-color 0.3s;
+        }
+
+        .choice-btn:hover {
+            background-color: ${colorValue};
+            color: black;
+        }
+
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .error-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .retry-btn {
+            background: ${colorValue};
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Spider/Bug animations */
+        .bug {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            transition: all 0.1s linear;
+        }
+
+        .spider {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            transition: all 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        // Embedded adventure data
+        const SCENE_DATA = ${scenesJson};
+        const ACCENT_COLOR = "${colorValue}";
+        const TAB_TITLE = "${titleValue}";
+        const SPIDERS_ENABLED = ${spidersEnabled};
+
+        // Set document title
+        document.title = TAB_TITLE;
+
+        // Spider/Bug controller script (simplified version)
+        class BugController {
+            constructor(options = {}) {
+                this.minBugs = options.minBugs || 3;
+                this.maxBugs = options.maxBugs || 8;
+                this.mouseOver = options.mouseOver || 'fly';
+                this.canFly = options.canFly !== false;
+                this.canDie = options.canDie !== false;
+                this.zoom = options.zoom || 20;
+                this.bugs = [];
+                this.interval = null;
+                this.mouseX = 0;
+                this.mouseY = 0;
+            }
+
+            initialize() {
+                this.createBugs();
+                this.startAnimation();
+                this.bindEvents();
+            }
+
+            createBugs() {
+                const bugCount = Math.floor(Math.random() * (this.maxBugs - this.minBugs + 1)) + this.minBugs;
+                for (let i = 0; i < bugCount; i++) {
+                    this.createBug();
+                }
+            }
+
+            createBug() {
+                const bug = document.createElement('div');
+                bug.className = 'bug';
+                bug.innerHTML = '🐛';
+                bug.style.fontSize = this.zoom + 'px';
+                bug.style.left = Math.random() * (window.innerWidth - this.zoom) + 'px';
+                bug.style.top = Math.random() * (window.innerHeight - this.zoom) + 'px';
+                bug.dataset.vx = (Math.random() - 0.5) * 4;
+                bug.dataset.vy = (Math.random() - 0.5) * 4;
+                document.body.appendChild(bug);
+                this.bugs.push(bug);
+            }
+
+            startAnimation() {
+                this.interval = setInterval(() => {
+                    this.bugs.forEach(bug => {
+                        let x = parseFloat(bug.style.left);
+                        let y = parseFloat(bug.style.top);
+                        let vx = parseFloat(bug.dataset.vx);
+                        let vy = parseFloat(bug.dataset.vy);
+
+                        // Update position
+                        x += vx;
+                        y += vy;
+
+                        // Bounce off walls
+                        if (x <= 0 || x >= window.innerWidth - this.zoom) {
+                            vx = -vx;
+                            bug.dataset.vx = vx;
+                        }
+                        if (y <= 0 || y >= window.innerHeight - this.zoom) {
+                            vy = -vy;
+                            bug.dataset.vy = vy;
+                        }
+
+                        bug.style.left = x + 'px';
+                        bug.style.top = y + 'px';
+                    });
+                }, 50);
+            }
+
+            bindEvents() {
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+                });
+            }
+
+            end() {
+                if (this.interval) {
+                    clearInterval(this.interval);
+                }
+                this.bugs.forEach(bug => {
+                    if (bug.parentNode) {
+                        bug.parentNode.removeChild(bug);
+                    }
+                });
+                this.bugs = [];
+            }
+        }
+
+        class SpiderController {
+            constructor(options = {}) {
+                this.minDelay = options.minDelay || 0;
+                this.maxDelay = options.maxDelay || 3000;
+                this.minBugs = options.minBugs || 2;
+                this.maxBugs = options.maxBugs || 4;
+                this.mouseOver = options.mouseOver || 'random';
+                this.canFly = options.canFly !== false;
+                this.canDie = options.canDie !== false;
+                this.zoom = options.zoom || 15;
+                this.spiders = [];
+                this.interval = null;
+            }
+
+            initialize() {
+                this.createSpiders();
+                this.startAnimation();
+            }
+
+            createSpiders() {
+                const spiderCount = Math.floor(Math.random() * (this.maxBugs - this.minBugs + 1)) + this.minBugs;
+                for (let i = 0; i < spiderCount; i++) {
+                    this.createSpider();
+                }
+            }
+
+            createSpider() {
+                const spider = document.createElement('div');
+                spider.className = 'spider';
+                spider.innerHTML = '🕷️';
+                spider.style.fontSize = this.zoom + 'px';
+                spider.style.left = Math.random() * (window.innerWidth - this.zoom) + 'px';
+                spider.style.top = Math.random() * (window.innerHeight - this.zoom) + 'px';
+                spider.dataset.vx = (Math.random() - 0.5) * 2;
+                spider.dataset.vy = (Math.random() - 0.5) * 2;
+                document.body.appendChild(spider);
+                this.spiders.push(spider);
+            }
+
+            startAnimation() {
+                this.interval = setInterval(() => {
+                    this.spiders.forEach(spider => {
+                        let x = parseFloat(spider.style.left);
+                        let y = parseFloat(spider.style.top);
+                        let vx = parseFloat(spider.dataset.vx);
+                        let vy = parseFloat(spider.dataset.vy);
+
+                        x += vx;
+                        y += vy;
+
+                        // Bounce off walls
+                        if (x <= 0 || x >= window.innerWidth - this.zoom) {
+                            vx = -vx;
+                            spider.dataset.vx = vx;
+                        }
+                        if (y <= 0 || y >= window.innerHeight - this.zoom) {
+                            vy = -vy;
+                            spider.dataset.vy = vy;
+                        }
+
+                        spider.style.left = x + 'px';
+                        spider.style.top = y + 'px';
+                    });
+                }, 100);
+            }
+
+            end() {
+                if (this.interval) {
+                    clearInterval(this.interval);
+                }
+                this.spiders.forEach(spider => {
+                    if (spider.parentNode) {
+                        spider.parentNode.removeChild(spider);
+                    }
+                });
+                this.spiders = [];
+            }
+        }
+
+        // React-like component for the adventure
+        class AdventureApp {
+            constructor() {
+                this.currentScene = 'start';
+                this.container = document.getElementById('app');
+                this.bugController = null;
+                this.spiderController = null;
+                this.render();
+                this.initializeEffects();
+            }
+
+            initializeEffects() {
+                if (SPIDERS_ENABLED) {
+                    this.spiderController = new SpiderController({
+                        minDelay: 0,
+                        maxDelay: 3000,
+                        minBugs: 2,
+                        maxBugs: 4,
+                        mouseOver: 'random',
+                        canFly: false,
+                        canDie: false,
+                        zoom: 15
+                    });
+                    this.spiderController.initialize();
+
+                    this.bugController = new BugController({
+                        minBugs: 3,
+                        maxBugs: 8,
+                        mouseOver: 'fly',
+                        canFly: true,
+                        canDie: false,
+                        zoom: 20
+                    });
+                    this.bugController.initialize();
+                }
+            }
+
+            handleChoice(nextScene) {
+                if (nextScene === 'make_your_own') {
+                    window.location.href = 'https://textadventure-creator.vercel.app/code';
+                    return;
+                }
+                if (nextScene === 'go_home') {
+                    window.location.href = 'https://textadventure-creator.vercel.app/';
+                    return;
+                }
+                this.currentScene = nextScene;
+                this.render();
+            }
+
+            render() {
+                const sceneData = SCENE_DATA[this.currentScene];
+
+                if (!sceneData) {
+                    this.container.innerHTML = \`
+                        <div class="error-container">
+                            <div class="error-text">Scene "\${this.currentScene}" not found!</div>
+                            <button class="retry-btn" onclick="app.handleChoice('start')">Return to Start</button>
+                        </div>
+                    \`;
+                    return;
+                }
+
+                const choicesHtml = sceneData.choices.map((choice, index) => \`
+                    <button class="choice-btn" onclick="app.handleChoice('\${choice.nextScene}')">
+                        \${choice.text}
+                    </button>
+                \`).join('');
+
+                this.container.innerHTML = \`
+                    <div class="container">
+                        <div class="text">\${sceneData.text}</div>
+                        <div class="choices">\${choicesHtml}</div>
+                    </div>
+                \`;
+            }
+        }
+
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new AdventureApp();
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (app && app.spiderController) {
+                app.spiderController.end();
+            }
+            if (app && app.bugController) {
+                app.bugController.end();
+            }
+        });
+    </script>
+</body>
+</html>`;
+
+    // Create and trigger download
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${tabTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_adventure.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const nodeTypesWithCallbacks = useMemo(() => ({
     sceneNode: (props: any) => (
       <SceneNode
@@ -475,6 +882,21 @@ export default function CodeEditor() {
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginRight: '8px'}}><path d="M8 5v14l11-7z" fill="currentColor"/></svg>Play Adventure
+        </button>
+        <button
+          onClick={downloadAdventure}
+          style={{
+            background: '#2196F3',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontFamily: "'Courier New', monospace",
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginRight: '8px'}}><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/></svg>Download HTML
         </button>
       </div>
 

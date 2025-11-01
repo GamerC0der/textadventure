@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 type Scene = {
   text: string;
@@ -13,18 +14,41 @@ type Scene = {
 export default function PlayAdventure() {
   const [scenes, setScenes] = useState<Record<string, Scene>>({});
   const [currentScene, setCurrentScene] = useState<string>('start');
+  const [accentColor, setAccentColor] = useState<string>('#61dafb');
+  const [tabTitle, setTabTitle] = useState<string>('My Adventure');
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const adventureData = localStorage.getItem('adventureData');
-    if (adventureData) {
+    const dataParam = searchParams.get('data');
+    const colorParam = searchParams.get('color');
+    const titleParam = searchParams.get('title');
+    if (dataParam) {
       try {
-        const parsedScenes = JSON.parse(adventureData);
+        const decodedData = decodeURIComponent(dataParam);
+        const parsedScenes = JSON.parse(decodedData);
         setScenes(parsedScenes);
       } catch (error) {
         console.error('Failed to parse adventure data:', error);
       }
     }
-  }, []);
+    if (colorParam) {
+      try {
+        const decodedColor = decodeURIComponent(colorParam);
+        setAccentColor(decodedColor);
+      } catch (error) {
+        console.error('Failed to parse accent color:', error);
+      }
+    }
+    if (titleParam) {
+      try {
+        const decodedTitle = decodeURIComponent(titleParam);
+        setTabTitle(decodedTitle);
+        document.title = decodedTitle;
+      } catch (error) {
+        console.error('Failed to parse tab title:', error);
+      }
+    }
+  }, [searchParams]);
 
   const handleChoice = (nextScene: string) => {
     setCurrentScene(nextScene);
@@ -71,7 +95,7 @@ export default function PlayAdventure() {
           onClick={() => setCurrentScene('start')}
           style={{
             marginTop: "20px",
-            background: "#61dafb",
+            background: accentColor,
             color: "black",
             border: "none",
             padding: "10px 20px",
@@ -125,7 +149,7 @@ export default function PlayAdventure() {
               fontSize: "18px",
               color: "white",
               backgroundColor: "transparent",
-              border: "2px solid #61dafb",
+              border: `2px solid ${accentColor}`,
               padding: "12px 24px",
               borderRadius: "25px",
               cursor: "pointer",

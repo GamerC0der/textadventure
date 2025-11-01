@@ -15,7 +15,86 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-function SceneNode({ data, id }: { data: any; id: string }) {
+function ColorPickerNode({ data }: { data: any }) {
+  const { accentColor, title, onChange, onTitleChange } = data;
+
+  return (
+    <div
+      style={{
+        background: '#1a1a1a',
+        border: `2px solid ${accentColor}`,
+        borderRadius: '8px',
+        padding: '15px',
+        color: 'white',
+        fontFamily: "'Courier New', monospace",
+        minWidth: '200px',
+        maxWidth: '250px',
+      }}
+    >
+      <div style={{
+        fontSize: '16px',
+        fontWeight: 'bold',
+        marginBottom: '10px',
+        color: accentColor
+      }}>
+        Theme Color
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <div style={{
+          fontSize: '12px',
+          color: '#ccc',
+          marginBottom: '5px'
+        }}>
+          Tab Title
+        </div>
+        <input
+          type="text"
+          value={title || 'My Adventure'}
+          onChange={(e) => onTitleChange?.(e.target.value)}
+          placeholder="Enter tab title..."
+          style={{
+            width: '100%',
+            background: '#111',
+            border: '1px solid #333',
+            borderRadius: '4px',
+            color: 'white',
+            fontFamily: "'Courier New', monospace",
+            fontSize: '12px',
+            padding: '6px 8px',
+            boxSizing: 'border-box'
+          }}
+        />
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <input
+          type="color"
+          value={accentColor}
+          onChange={(e) => onChange?.(e.target.value)}
+          style={{
+            width: '60px',
+            height: '40px',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            background: 'none',
+            outline: 'none'
+          }}
+        />
+        <div style={{
+          fontSize: '12px',
+          color: '#ccc',
+          flex: 1
+        }}>
+          Click to change accent color
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: string; accentColor?: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(data.text || 'Enter scene text...');
   const [choices, setChoices] = useState(data.choices || []);
@@ -32,6 +111,7 @@ function SceneNode({ data, id }: { data: any; id: string }) {
   };
 
   const updateChoice = (index: number, field: string, value: string) => {
+    console.log('updateChoice', index, field, value);
     const newChoices = [...choices];
     newChoices[index] = { ...newChoices[index], [field]: value };
     setChoices(newChoices);
@@ -48,7 +128,7 @@ function SceneNode({ data, id }: { data: any; id: string }) {
     <div
       style={{
         background: '#1a1a1a',
-        border: '2px solid #61dafb',
+        border: `2px solid ${accentColor}`,
         borderRadius: '8px',
         padding: '15px',
         color: 'white',
@@ -57,7 +137,7 @@ function SceneNode({ data, id }: { data: any; id: string }) {
         maxWidth: '400px',
       }}
     >
-      <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px', color: '#61dafb' }}>
+      <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px', color: accentColor }}>
         Scene: {id}
       </div>
 
@@ -181,6 +261,7 @@ function SceneNode({ data, id }: { data: any; id: string }) {
 
 const nodeTypes: NodeTypes = {
   sceneNode: SceneNode,
+  colorPickerNode: ColorPickerNode,
 };
 
 const initialNodes: Node[] = [
@@ -196,6 +277,12 @@ const initialNodes: Node[] = [
       ]
     },
   },
+  {
+    id: 'color-picker',
+    type: 'colorPickerNode',
+    position: { x: 50, y: 25 },
+    data: { title: 'My Adventure' },
+  },
 ];
 
 const initialEdges: Edge[] = [];
@@ -205,6 +292,8 @@ export default function CodeEditor() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [nodeIdCounter, setNodeIdCounter] = useState(2);
+  const [accentColor, setAccentColor] = useState('#61dafb');
+  const [tabTitle, setTabTitle] = useState('My Adventure');
 
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
@@ -228,14 +317,17 @@ export default function CodeEditor() {
       };
     });
 
-    localStorage.setItem('adventureData', JSON.stringify(scenes));
-    window.open('/play', '_blank');
+    const data = encodeURIComponent(JSON.stringify(scenes));
+    const color = encodeURIComponent(accentColor);
+    const title = encodeURIComponent(tabTitle);
+    window.open(`/play?data=${data}&color=${color}&title=${title}`, '_blank');
   };
 
   const nodeTypesWithCallbacks = useMemo(() => ({
     sceneNode: (props: any) => (
       <SceneNode
         {...props}
+        accentColor={accentColor}
         data={{
           ...props.data,
           onChange: (nodeId: string, newData: any) => {
@@ -248,7 +340,23 @@ export default function CodeEditor() {
         }}
       />
     ),
-  }), [setNodes]);
+    colorPickerNode: (props: any) => (
+      <ColorPickerNode
+        {...props}
+        data={{
+          ...props.data,
+          accentColor,
+          title: tabTitle,
+          onChange: (newColor: string) => {
+            setAccentColor(newColor);
+          },
+          onTitleChange: (newTitle: string) => {
+            setTabTitle(newTitle);
+          }
+        }}
+      />
+    ),
+  }), [setNodes, accentColor, tabTitle]);
 
   return (
     <div style={{ height: '100vh', backgroundColor: '#000' }}>
@@ -263,7 +371,7 @@ export default function CodeEditor() {
         <button
           onClick={addNode}
           style={{
-            background: '#61dafb',
+            background: accentColor,
             color: 'black',
             border: 'none',
             padding: '8px 16px',
@@ -288,7 +396,7 @@ export default function CodeEditor() {
             fontFamily: "'Courier New', monospace",
           }}
         >
-          ▶️ Play Adventure
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginRight: '8px'}}><path d="M8 5v14l11-7z" fill="currentColor"/></svg>Play Adventure
         </button>
       </div>
 
@@ -302,7 +410,7 @@ export default function CodeEditor() {
         fitView
         style={{ backgroundColor: '#000' }}
       >
-        <Controls style={{ backgroundColor: '#1a1a1a', border: '1px solid #61dafb' }} />
+        <Controls style={{ backgroundColor: '#1a1a1a', border: `1px solid ${accentColor}` }} />
         <Background color="#333" gap={16} />
       </ReactFlow>
     </div>

@@ -47,11 +47,9 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    // Load bug script and initialize bugs
     const script = document.createElement('script');
     script.src = '/bug.js';
     script.onload = () => {
-      // Initialize bugs after script loads
       if (typeof window !== 'undefined' && (window as any).BugController) {
         new (window as any).BugController({
           minBugs: 3,
@@ -77,7 +75,6 @@ function Home() {
     document.head.appendChild(script);
 
     return () => {
-      // Cleanup script when component unmounts
       const existingScript = document.querySelector('script[src="/bug.js"]');
       if (existingScript) {
         document.head.removeChild(existingScript);

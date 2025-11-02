@@ -475,6 +475,75 @@ export default function CodeEditor() {
             font-family: 'Courier New', monospace;
         }
 
+        .battle-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+
+        .battle-header {
+            font-size: 32px;
+            font-weight: bold;
+            color: ${colorValue};
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .battle-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        .player-stats, .enemy-stats {
+            background: rgba(0,0,0,0.7);
+            border: 2px solid ${colorValue};
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            min-width: 150px;
+        }
+
+        .battle-log-container {
+            background: rgba(0,0,0,0.8);
+            border: 2px solid #666;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            width: 100%;
+            min-height: 120px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .battle-log {
+            margin-bottom: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .battle-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .battle-actions .choice-btn {
+            min-width: 120px;
+            font-size: 16px;
+            padding: 12px 24px;
+        }
+
         .bug {
             position: absolute;
             pointer-events: none;
@@ -663,6 +732,11 @@ export default function CodeEditor() {
                 this.container = document.getElementById('app');
                 this.bugController = null;
                 this.spiderController = null;
+                this.playerHP = 100;
+                this.enemyHP = 75;
+                this.enemyName = 'Spiders';
+                this.inBattle = false;
+                this.battleLog = [];
                 this.render();
                 this.initializeEffects();
             }
@@ -702,35 +776,98 @@ export default function CodeEditor() {
                     window.location.href = 'https://textadventure-creator.vercel.app/';
                     return;
                 }
+
+                if (nextScene === 'ATTACK') {
+                    this.handleAttack();
+                    return;
+                }
+                if (nextScene === 'DEFEND') {
+                    this.handleDefend();
+                    return;
+                }
+
                 this.currentScene = nextScene;
                 this.render();
             }
 
-            render() {
-                const sceneData = SCENE_DATA[this.currentScene];
+            handleAttack() {
+                if (!this.inBattle) return;
 
-                if (!sceneData) {
-                    this.container.innerHTML = \`
-                        <div class="error-container">
-                            <div class="error-text">Scene "\${this.currentScene}" not found!</div>
-                            <button class="retry-btn" onclick="app.handleChoice('start')">Return to Start</button>
-                        </div>
-                    \`;
+                const damage = Math.floor(Math.random() * 15) + 5;
+                this.enemyHP = Math.max(0, this.enemyHP - damage);
+                this.battleLog.push('You attack for ' + damage + ' damage!');
+
+                if (this.enemyHP > 0) {
+                    const enemyDamage = Math.floor(Math.random() * 12) + 6;
+                    this.playerHP = Math.max(0, this.playerHP - enemyDamage);
+                    this.battleLog.push(this.enemyName + ' attacks for ' + enemyDamage + ' damage!');
+
+                    if (this.playerHP <= 0) {
+                        this.battleLog.push('You have been defeated!');
+                        this.inBattle = false;
+                    }
+                } else {
+                    this.battleLog.push(this.enemyName + ' has been defeated!');
+                    this.inBattle = false;
+                }
+
+                this.render();
+            }
+
+            handleDefend() {
+                if (!this.inBattle) return;
+
+                const healAmount = Math.floor(this.playerHP * 0.1);
+                this.playerHP = Math.min(100, this.playerHP + healAmount);
+                this.battleLog.push('Defended');
+
+                const enemyDamage = Math.floor((Math.random() * 12) + 6) / 2;
+                this.playerHP = Math.max(0, this.playerHP - enemyDamage);
+                this.battleLog.push(this.enemyName + ' attacks for ' + Math.floor(enemyDamage * 2) + ' damage!');
+
+                if (this.playerHP <= 0) {
+                    this.battleLog.push('You have been defeated!');
+                    this.inBattle = false;
+                }
+
+                this.render();
+            }
+
+            render() {
+                if (this.inBattle) {
+                    this.renderBattle();
                     return;
                 }
 
-                const choicesHtml = sceneData.choices.map((choice, index) => \`
-                    <button class="choice-btn" onclick="app.handleChoice('\${choice.nextScene}')">
-                        \${choice.text}
-                    </button>
-                \`).join('');
+                const sceneData = SCENE_DATA[this.currentScene];
 
-                this.container.innerHTML = \`
-                    <div class="container">
-                        <div class="text">\${sceneData.text}</div>
-                        <div class="choices">\${choicesHtml}</div>
-                    </div>
-                \`;
+                if (!sceneData) {
+                    this.container.innerHTML = '<div class="error-container"><div class="error-text">Scene "' + this.currentScene + '" not found!</div><button class="retry-btn" onclick="app.handleChoice(\'start\')">Return to Start</button></div>';
+                    return;
+                }
+
+                let textContent = sceneData.text;
+                if (textContent.includes('[START_BATTLE]')) {
+                    textContent = textContent.replace('[START_BATTLE]', '');
+                    this.inBattle = true;
+                    this.battleLog = [];
+                    this.playerHP = 100;
+                    this.enemyHP = 75;
+                    this.enemyName = 'Spiders';
+                    this.renderBattle();
+                    return;
+                }
+
+                const choicesHtml = sceneData.choices.map((choice, index) => '<button class="choice-btn" onclick="app.handleChoice(\'' + choice.nextScene + '\')">' + choice.text + '</button>').join('');
+
+                this.container.innerHTML = '<div class="container"><div class="text">' + textContent + '</div><div class="choices">' + choicesHtml + '</div></div>';
+            }
+
+            renderBattle() {
+                const logHtml = this.battleLog.map(log => '<div class="battle-log">' + log + '</div>').join('');
+                const initialMessage = this.battleLog.length === 0 ? 'A ' + this.enemyName + ' appears!' : logHtml;
+
+                this.container.innerHTML = '<div class="battle-container"><div class="battle-header">BATTLE: ' + this.enemyName.toUpperCase() + '</div><div class="battle-stats"><div class="player-stats">🛡️ PLAYER<br>HP: ' + this.playerHP + '/100</div><div class="enemy-stats">👹 ' + this.enemyName.toUpperCase() + '<br>HP: ' + this.enemyHP + '/75</div></div><div class="battle-log-container">' + initialMessage + '</div><div class="battle-actions"><button class="choice-btn" onclick="app.handleChoice(\'ATTACK\')">ATTACK</button><button class="choice-btn" onclick="app.handleChoice(\'DEFEND\')">DEFEND</button></div></div>';
             }
         }
 

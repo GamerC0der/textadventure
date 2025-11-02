@@ -129,14 +129,29 @@ function Home() {
     }));
 
     if (newEnemyHealth > 0) {
-      setTimeout(enemyAttack, 1000);
+      setTimeout(() => enemyAttack(false), 1000);
     }
   };
 
-  const enemyAttack = () => {
-    const damage = Math.floor(Math.random() * 15) + 5;
+  const playerDefend = () => {
+    const log = [...battle.battleLog, `You take a defensive stance!`];
+
+    setBattle(prev => ({
+      ...prev,
+      battleLog: log,
+      turn: 'enemy'
+    }));
+
+    setTimeout(() => enemyAttack(true), 1000);
+  };
+
+  const enemyAttack = (playerIsDefending = false) => {
+    const baseDamage = Math.floor(Math.random() * 15) + 5;
+    const damage = playerIsDefending ? Math.floor(baseDamage * 0.5) : baseDamage;
     const newPlayerHealth = Math.max(0, battle.playerHealth - damage);
-    const log = [...battle.battleLog, `The ${battle.enemyName} attacks for ${damage} damage!`];
+    const log = [...battle.battleLog, playerIsDefending
+      ? `The ${battle.enemyName} attacks for ${baseDamage} damage, but you defend and only take ${damage}!`
+      : `The ${battle.enemyName} attacks for ${damage} damage!`];
 
     if (newPlayerHealth <= 0) {
       log.push('You were defeated! Game Over.');
@@ -228,7 +243,7 @@ function Home() {
               ))}
             </div>
 
-            <div className="text-center">
+            <div className="text-center flex gap-4 justify-center">
               <button
                 onClick={playerAttack}
                 disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
@@ -239,6 +254,17 @@ function Home() {
                 }`}
               >
                 <FontAwesomeIcon icon={faBolt} className="mr-2" /> ATTACK <FontAwesomeIcon icon={faBolt} className="ml-2" />
+              </button>
+              <button
+                onClick={playerDefend}
+                disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
+                className={`text-xl px-7.5 py-3.75 rounded-lg font-bold ${
+                  battle.turn === 'player' && battle.enemyHealth > 0
+                    ? 'bg-green-500 text-white cursor-pointer hover:bg-green-600'
+                    : 'bg-gray-600 text-white cursor-not-allowed'
+                }`}
+              >
+                🛡️ DEFEND 🛡️
               </button>
             </div>
           </div>

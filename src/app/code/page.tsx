@@ -90,6 +90,56 @@ function ColorPickerNode({ data }: { data: any }) {
   );
 }
 
+function NoteNode({ data, id, accentColor = '#61dafb' }: { data: any; id: string; accentColor?: string }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [text, setText] = useState(data.text || '');
+
+  const handleTextChange = (newText: string) => {
+    setText(newText);
+    data.onChange?.(id, { ...data, text: newText });
+  };
+
+  return (
+    <div className="bg-yellow-900 border-2 rounded-lg p-3.75 text-white font-mono min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
+      <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
+        📝 Note: {id}
+      </div>
+
+      <div className="text-xs text-yellow-200 mb-2.5 italic">
+        Notes help you organize your adventure design. They don't appear in the final game.
+      </div>
+
+      {isEditing ? (
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onBlur={() => {
+            setIsEditing(false);
+            handleTextChange(text);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              setIsEditing(false);
+              handleTextChange(text);
+            }
+          }}
+          className="w-full bg-yellow-800 border border-yellow-600 rounded text-white font-mono text-sm p-2 resize-vertical min-h-20"
+          placeholder="Write your note here..."
+          autoFocus
+        />
+      ) : (
+        <div
+          onClick={() => setIsEditing(true)}
+          className="cursor-pointer whitespace-pre-wrap leading-relaxed min-h-15 text-sm"
+        >
+          {text || 'Click to add a note...'}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: string; accentColor?: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(data.text || 'Enter scene text...');
@@ -195,6 +245,7 @@ function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: strin
 const nodeTypes: NodeTypes = {
   sceneNode: SceneNode,
   colorPickerNode: ColorPickerNode,
+  noteNode: NoteNode,
 };
 
 const initialNodes: Node[] = [
@@ -224,7 +275,7 @@ export default function CodeEditor() {
   const router = useRouter();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [nodeIdCounter, setNodeIdCounter] = useState(2);
+  const [nodeIdCounter, setNodeIdCounter] = useState(1);
   const [accentColor, setAccentColor] = useState('#61dafb');
   const [tabTitle, setTabTitle] = useState('My Adventure');
   const [spiders, setSpiders] = useState(false);
@@ -243,9 +294,21 @@ export default function CodeEditor() {
     setNodeIdCounter(prev => prev + 1);
   };
 
+  const addNoteNode = () => {
+    const id = `note${nodeIdCounter}`;
+    setNodes((nds) => nds.concat({
+      id,
+      type: 'noteNode',
+      position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+      data: { text: '' },
+    }));
+    setNodeIdCounter(prev => prev + 1);
+  };
+
   const startPlay = () => {
     const scenes: Record<string, any> = {};
     nodes.forEach(node => {
+      if (node.type === 'noteNode') return;
       scenes[node.id] = {
         text: node.data.text || '',
         choices: node.data.choices || []
@@ -271,13 +334,14 @@ export default function CodeEditor() {
   const clearAll = () => {
     setNodes([initialNodes[1]]);
     setEdges([]);
-    setNodeIdCounter(2);
+    setNodeIdCounter(1);
     setContextMenu(null);
   };
 
   const downloadAdventure = () => {
     const scenes: Record<string, any> = {};
     nodes.forEach(node => {
+      if (node.type === 'noteNode') return;
       scenes[node.id] = {
         text: node.data.text || '',
         choices: node.data.choices || []
@@ -699,6 +763,22 @@ export default function CodeEditor() {
         }}
       />
     ),
+    noteNode: (props: any) => (
+      <NoteNode
+        {...props}
+        accentColor={accentColor}
+        data={{
+          ...props.data,
+          onChange: (nodeId: string, newData: any) => {
+            setNodes((nds) =>
+              nds.map((node) =>
+                node.id === nodeId ? { ...node, data: newData } : node
+              )
+            );
+          }
+        }}
+      />
+    ),
     colorPickerNode: (props: any) => (
       <ColorPickerNode
         {...props}
@@ -740,6 +820,12 @@ export default function CodeEditor() {
             + Add Scene
           </button>
           <button
+            onClick={() => { addNoteNode(); setContextMenu(null); }}
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+          >
+            📝 Add Note
+          </button>
+          <button
             onClick={() => { startPlay(); setContextMenu(null); }}
             className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
           >
@@ -776,6 +862,12 @@ export default function CodeEditor() {
           style={{ background: accentColor }}
         >
           + Add Scene
+        </button>
+        <button
+          onClick={addNoteNode}
+          className="bg-yellow-500 text-black px-4 py-2 rounded cursor-pointer font-bold font-mono"
+        >
+          📝 Add Note
         </button>
         <button
           onClick={startPlay}

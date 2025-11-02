@@ -17,6 +17,7 @@ type Scene = {
   choices: Choice[];
 };
 
+
 type BattleState = {
   inBattle: boolean;
   playerHealth: number;

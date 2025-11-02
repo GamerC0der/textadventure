@@ -15,7 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpider } from '@fortawesome/free-solid-svg-icons';
+import { faSpider, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function ColorPickerNode({ data }: { data: any }) {
   const { accentColor, title, spiders, onChange, onTitleChange, onSpidersChange } = data;
@@ -75,15 +75,50 @@ function ColorPickerNode({ data }: { data: any }) {
         </label>
       </div>
 
-      <div className="flex items-center gap-2.5">
-        <input
-          type="color"
-          value={accentColor}
-          onChange={(e) => onChange?.(e.target.value)}
-          className="w-15 h-10 border-none rounded cursor-pointer bg-none outline-none"
-        />
-        <div className="text-xs text-gray-400 flex-1">
-          Click to change accent color
+      <div className="mb-3.75">
+        <div className="text-xs text-gray-400 mb-1.25">
+          Accent Color
+        </div>
+        <div className="flex items-center gap-2.5 mb-2.5">
+          <input
+            type="color"
+            value={accentColor}
+            onChange={(e) => onChange?.(e.target.value)}
+            className="w-12 h-10 border-2 border-gray-600 rounded cursor-pointer bg-gray-800 outline-none"
+            style={{ borderColor: accentColor }}
+          />
+          <input
+            type="text"
+            value={accentColor}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^#[0-9A-F]{6}$/i.test(value)) {
+                onChange?.(value);
+              }
+            }}
+            placeholder="#61dafb"
+            className="flex-1 bg-gray-800 border border-gray-600 rounded text-white font-mono text-xs px-2 py-1.5"
+          />
+        </div>
+        <div className="grid grid-cols-8 gap-1">
+          {[
+            '#61dafb', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+            '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce',
+            '#85c1e9', '#f8c471', '#82e0aa', '#f1948a', '#85c1e9',
+            '#f8c471'
+          ].map((color) => (
+            <button
+              key={color}
+              onClick={() => onChange?.(color)}
+              className={`w-6 h-6 rounded border-2 transition-all duration-200 ${
+                accentColor === color
+                  ? 'border-white scale-110 shadow-lg'
+                  : 'border-gray-600 hover:border-gray-400'
+              }`}
+              style={{ backgroundColor: color }}
+              title={color}
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -208,7 +243,7 @@ function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: strin
           onClick={addChoice}
           className="bg-green-500 text-white border-none px-2.5 py-1.25 rounded cursor-pointer text-xs font-mono"
         >
-          + Add Choice
+          <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add Choice
         </button>
       </div>
 
@@ -352,8 +387,6 @@ export default function CodeEditor() {
     const colorValue = accentColor;
     const titleValue = tabTitle;
     const spidersEnabled = spiders;
-
-    // Create standalone HTML with embedded data and logic
     const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -442,7 +475,6 @@ export default function CodeEditor() {
             font-family: 'Courier New', monospace;
         }
 
-        /* Spider/Bug animations */
         .bug {
             position: absolute;
             pointer-events: none;
@@ -462,16 +494,11 @@ export default function CodeEditor() {
     <div id="app"></div>
 
     <script>
-        // Embedded adventure data
         const SCENE_DATA = ${scenesJson};
         const ACCENT_COLOR = "${colorValue}";
         const TAB_TITLE = "${titleValue}";
         const SPIDERS_ENABLED = ${spidersEnabled};
-
-        // Set document title
         document.title = TAB_TITLE;
-
-        // Spider/Bug controller script (simplified version)
         class BugController {
             constructor(options = {}) {
                 this.minBugs = options.minBugs || 3;
@@ -519,12 +546,8 @@ export default function CodeEditor() {
                         let y = parseFloat(bug.style.top);
                         let vx = parseFloat(bug.dataset.vx);
                         let vy = parseFloat(bug.dataset.vy);
-
-                        // Update position
                         x += vx;
                         y += vy;
-
-                        // Bounce off walls
                         if (x <= 0 || x >= window.innerWidth - this.zoom) {
                             vx = -vx;
                             bug.dataset.vx = vx;
@@ -533,7 +556,6 @@ export default function CodeEditor() {
                             vy = -vy;
                             bug.dataset.vy = vy;
                         }
-
                         bug.style.left = x + 'px';
                         bug.style.top = y + 'px';
                     });
@@ -606,11 +628,8 @@ export default function CodeEditor() {
                         let y = parseFloat(spider.style.top);
                         let vx = parseFloat(spider.dataset.vx);
                         let vy = parseFloat(spider.dataset.vy);
-
                         x += vx;
                         y += vy;
-
-                        // Bounce off walls
                         if (x <= 0 || x >= window.innerWidth - this.zoom) {
                             vx = -vx;
                             spider.dataset.vx = vx;
@@ -619,7 +638,6 @@ export default function CodeEditor() {
                             vy = -vy;
                             spider.dataset.vy = vy;
                         }
-
                         spider.style.left = x + 'px';
                         spider.style.top = y + 'px';
                     });
@@ -639,7 +657,6 @@ export default function CodeEditor() {
             }
         }
 
-        // React-like component for the adventure
         class AdventureApp {
             constructor() {
                 this.currentScene = 'start';
@@ -733,8 +750,6 @@ export default function CodeEditor() {
     </script>
 </body>
 </html>`;
-
-    // Create and trigger download
     const blob = new Blob([htmlContent], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

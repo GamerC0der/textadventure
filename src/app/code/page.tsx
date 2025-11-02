@@ -17,12 +17,16 @@ import 'reactflow/dist/style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpider, faPlus } from '@fortawesome/free-solid-svg-icons';
 
+const NODE_MIN_WIDTH = 200;
+const NODE_MAX_WIDTH = 250;
+const INPUT_HEIGHT = 40;
+
 function ColorPickerNode({ data }: { data: any }) {
   const { accentColor, title, spiders, onChange, onTitleChange, onSpidersChange } = data;
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white font-mono min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
+    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white font-mono" style={{ borderColor: accentColor, minWidth: NODE_MIN_WIDTH, maxWidth: NODE_MAX_WIDTH }}>
       <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
         Theme Settings
       </div>
@@ -104,8 +108,7 @@ function ColorPickerNode({ data }: { data: any }) {
           {[
             '#61dafb', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
             '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce',
-            '#85c1e9', '#f8c471', '#82e0aa', '#f1948a', '#85c1e9',
-            '#f8c471'
+            '#85c1e9', '#f8c471', '#82e0aa', '#f1948a'
           ].map((color) => (
             <button
               key={color}

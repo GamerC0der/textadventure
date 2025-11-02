@@ -5,6 +5,18 @@ import { useSearchParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 
+const PLAYER_MAX_HEALTH = 100;
+const BATTLE_TIMEOUT = 2000;
+const ATTACK_DAMAGE_MIN = 10;
+const ATTACK_DAMAGE_MAX = 20;
+const ENEMY_DAMAGE_MIN = 5;
+const ENEMY_DAMAGE_MAX = 15;
+const DEFENSE_MULTIPLIER = 0.5;
+
+const BUTTON_BASE = "rounded font-bold font-mono cursor-pointer";
+const CHOICE_BUTTON_CLASSES = "text-lg text-white bg-transparent border-2 px-6 py-3 rounded-full cursor-pointer font-bold uppercase tracking-wide min-w-50 hover:text-black transition-colors duration-300";
+const WELCOME_BUTTON_CLASSES = "px-6 py-3 rounded-full font-bold cursor-pointer transition-opacity hover:opacity-90";
+
 type Scene = {
   text: string;
   choices: Array<{
@@ -81,7 +93,7 @@ function useAdventureParams(): AdventureState {
       const state: AdventureState = {
         scenes: {},
         currentScene: 'start',
-        accentColor: '#61dafb',
+        accentColor: '#a855f7',
         tabTitle: 'My Adventure',
         spiders: false,
         isLoading: false,
@@ -112,7 +124,7 @@ function useAdventureParams(): AdventureState {
       return {
         scenes: {},
         currentScene: 'start',
-        accentColor: '#61dafb',
+        accentColor: '#a855f7',
         tabTitle: 'My Adventure',
         spiders: false,
         isLoading: false,
@@ -221,7 +233,7 @@ function ErrorScreen({
       <div className="text-2xl mb-5 text-center text-red-400">{error}</div>
       <button
         onClick={onReturnToStart}
-        className="mt-5 px-5 py-2.5 rounded font-bold font-mono cursor-pointer"
+        className={`mt-5 px-5 py-2.5 ${BUTTON_BASE}`}
         style={{ background: accentColor, color: "black" }}
       >
         Return to Start
@@ -242,7 +254,7 @@ function ChoiceButton({
   return (
     <button
       onClick={() => onClick(choice.nextScene)}
-      className="text-lg text-white bg-transparent border-2 px-6 py-3 rounded-full cursor-pointer font-bold uppercase tracking-wide min-w-50 hover:text-black transition-colors duration-300"
+      className={CHOICE_BUTTON_CLASSES}
       style={{ borderColor: accentColor }}
       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = accentColor}
       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -273,28 +285,28 @@ function GameScreen({
     return (
       <main className="min-h-screen bg-black text-white font-mono flex flex-col justify-center items-center p-10 relative">
         <div className="max-w-4xl w-full">
-          <div className="text-3xl leading-relaxed mb-7.5 text-center text-red-400">
+          <div className="text-3xl leading-relaxed mb-7.5 text-center text-purple-400">
             <FontAwesomeIcon icon={faBolt} className="mr-2" /> BATTLE: {battle.enemyName.toUpperCase()} <FontAwesomeIcon icon={faBolt} className="ml-2" />
           </div>
 
           <div className="flex justify-between mb-7.5">
-            <div className="p-5 border-2 border-green-500 rounded-lg bg-black">
+            <div className="p-5 border-2 border-cyan-500 rounded-lg bg-black">
               <div className="text-xl mb-2.5">🛡️ PLAYER</div>
-              <div className="text-lg">HP: {battle.playerHealth}/100</div>
+              <div className="text-lg">HP: {battle.playerHealth}/{PLAYER_MAX_HEALTH}</div>
               <div className="w-50 h-2.5 bg-gray-600 rounded mt-1.5">
                 <div
-                  className="h-full bg-green-500 rounded"
-                  style={{ width: `${(battle.playerHealth / 100) * 100}%` }}
+                  className="h-full bg-cyan-500 rounded"
+                  style={{ width: `${(battle.playerHealth / PLAYER_MAX_HEALTH) * 100}%` }}
                 />
               </div>
             </div>
 
-            <div className="p-5 border-2 border-red-500 rounded-lg bg-black">
+            <div className="p-5 border-2 border-purple-500 rounded-lg bg-black">
               <div className="text-xl mb-2.5">👹 {battle.enemyName.toUpperCase()}</div>
               <div className="text-lg">HP: {battle.enemyHealth}/{battle.enemyMaxHealth}</div>
               <div className="w-50 h-2.5 bg-gray-600 rounded mt-1.5">
                 <div
-                  className="h-full bg-red-500 rounded"
+                  className="h-full bg-purple-500 rounded"
                   style={{ width: `${(battle.enemyHealth / battle.enemyMaxHealth) * 100}%` }}
                 />
               </div>
@@ -315,7 +327,7 @@ function GameScreen({
               disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
               className={`text-xl px-7.5 py-3.75 rounded-lg font-bold ${
                 battle.turn === 'player' && battle.enemyHealth > 0
-                  ? 'bg-blue-500 text-white cursor-pointer hover:bg-blue-600'
+                  ? 'bg-purple-500 text-white cursor-pointer hover:bg-purple-600'
                   : 'bg-gray-600 text-white cursor-not-allowed'
               }`}
             >
@@ -326,7 +338,7 @@ function GameScreen({
               disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
               className={`text-xl px-7.5 py-3.75 rounded-lg font-bold ${
                 battle.turn === 'player' && battle.enemyHealth > 0
-                  ? 'bg-green-500 text-white cursor-pointer hover:bg-green-600'
+                  ? 'bg-cyan-500 text-white cursor-pointer hover:bg-cyan-600'
                   : 'bg-gray-600 text-white cursor-not-allowed'
               }`}
             >
@@ -334,22 +346,12 @@ function GameScreen({
             </button>
           </div>
         </div>
-
-        <button
-          onClick={onDownload}
-          className="absolute bottom-5 right-5 text-lg text-white bg-transparent border-2 px-4 py-2 rounded-full cursor-pointer font-bold uppercase tracking-wide hover:text-black transition-colors duration-300"
-          style={{ borderColor: accentColor }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = accentColor}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-        >
-          📥 Download
-        </button>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black text-white font-mono flex flex-col justify-center items-center p-10 relative">
+    <main className="min-h-screen bg-black text-white font-mono flex flex-col justify-center items-center p-10">
       <div className="text-2xl leading-relaxed mb-10 max-w-2xl text-center whitespace-pre-line">
         {currentSceneData.text}
       </div>
@@ -364,16 +366,6 @@ function GameScreen({
           />
         ))}
       </div>
-
-      <button
-        onClick={onDownload}
-        className="absolute bottom-5 right-5 text-lg text-white bg-transparent border-2 px-4 py-2 rounded-full cursor-pointer font-bold uppercase tracking-wide hover:text-black transition-colors duration-300"
-        style={{ borderColor: accentColor }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = accentColor}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-      >
-        📥 Download
-      </button>
     </main>
   );
 }
@@ -385,7 +377,7 @@ function PlayAdventure() {
   const [currentScene, setCurrentScene] = useState<string>('start');
   const [battle, setBattle] = useState<BattleState>({
     inBattle: false,
-    playerHealth: 100,
+    playerHealth: PLAYER_MAX_HEALTH,
     enemyMaxHealth: 0,
     enemyHealth: 0,
     enemyName: '',
@@ -429,7 +421,7 @@ function PlayAdventure() {
   const startBattle = (enemyName: string, enemyHealth: number) => {
     setBattle({
       inBattle: true,
-      playerHealth: 100,
+      playerHealth: PLAYER_MAX_HEALTH,
       enemyMaxHealth: enemyHealth,
       enemyHealth,
       enemyName,
@@ -439,7 +431,7 @@ function PlayAdventure() {
   };
 
   const playerAttack = () => {
-    const damage = Math.floor(Math.random() * 20) + 10;
+    const damage = Math.floor(Math.random() * (ATTACK_DAMAGE_MAX - ATTACK_DAMAGE_MIN + 1)) + ATTACK_DAMAGE_MIN;
     const newEnemyHealth = Math.max(0, battle.enemyHealth - damage);
     const log = [...battle.battleLog, `You attack for ${damage} damage!`];
 
@@ -448,7 +440,7 @@ function PlayAdventure() {
       setTimeout(() => {
         setBattle(prev => ({ ...prev, inBattle: false, battleLog: [] }));
         setCurrentScene('start');
-      }, 2000);
+      }, BATTLE_TIMEOUT);
     }
 
     setBattle(prev => ({
@@ -476,8 +468,8 @@ function PlayAdventure() {
   };
 
   const enemyAttack = (playerIsDefending = false) => {
-    const baseDamage = Math.floor(Math.random() * 15) + 5;
-    const damage = playerIsDefending ? Math.floor(baseDamage * 0.5) : baseDamage;
+    const baseDamage = Math.floor(Math.random() * (ENEMY_DAMAGE_MAX - ENEMY_DAMAGE_MIN + 1)) + ENEMY_DAMAGE_MIN;
+    const damage = playerIsDefending ? Math.floor(baseDamage * DEFENSE_MULTIPLIER) : baseDamage;
     const newPlayerHealth = Math.max(0, battle.playerHealth - damage);
     const log = [...battle.battleLog, playerIsDefending
       ? `The ${battle.enemyName} attacks for ${baseDamage} damage, but you defend and only take ${damage}!`
@@ -487,8 +479,8 @@ function PlayAdventure() {
       log.push('You were defeated! Game Over.');
       setTimeout(() => {
         setCurrentScene('start');
-        setBattle(prev => ({ ...prev, inBattle: false, battleLog: [], playerHealth: 100 }));
-      }, 2000);
+        setBattle(prev => ({ ...prev, inBattle: false, battleLog: [], playerHealth: PLAYER_MAX_HEALTH }));
+      }, BATTLE_TIMEOUT);
     }
 
     setBattle(prev => ({
@@ -540,11 +532,35 @@ function PlayAdventure() {
 
   if (Object.keys(adventureState.scenes).length === 0) {
     return (
-      <ErrorScreen
-        error="No adventure data found"
-        accentColor={adventureState.accentColor}
-        onReturnToStart={handleReturnToStart}
-      />
+      <main className="min-h-screen bg-black text-white font-mono flex flex-col justify-center items-center p-10">
+        <div className="max-w-2xl text-center">
+          <div className="text-3xl mb-8 text-purple-400">Welcome to Text Adventure!</div>
+          <div className="text-lg leading-relaxed mb-8">
+            This is an interactive text-based adventure game where you make choices to progress through the story.
+            Click on the colored buttons below to make your decisions and explore different paths in the narrative.
+            Some adventures may include battles where you'll need to choose between attacking or defending.
+          </div>
+          <div className="text-base leading-relaxed mb-8 text-gray-300">
+            To get started, create your own adventure using the "Make Your Own" button, or visit the home page to explore existing adventures.
+            Each choice you make will take you to a new scene with more story and decisions to make.
+          </div>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => window.location.href = '/code'}
+              className={`${WELCOME_BUTTON_CLASSES} text-black`}
+              style={{ background: adventureState.accentColor }}
+            >
+              Make Your Own Adventure
+            </button>
+            <button
+              onClick={() => window.location.href = '/'}
+              className="px-6 py-3 rounded-full font-bold text-white bg-gray-700 border-2 border-gray-500 cursor-pointer hover:bg-gray-600 transition-colors"
+            >
+              Browse Adventures
+            </button>
+          </div>
+        </div>
+      </main>
     );
   }
 

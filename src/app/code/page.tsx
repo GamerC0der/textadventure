@@ -96,7 +96,7 @@ function ColorPickerNode({ data }: { data: any }) {
                 onChange?.(value);
               }
             }}
-            placeholder="#61dafb"
+          placeholder="#61dafb"
             className="flex-1 bg-gray-800 border border-gray-600 rounded text-white font-mono text-xs px-2 py-1.5"
           />
         </div>
@@ -329,6 +329,29 @@ export default function CodeEditor() {
     setNodeIdCounter(prev => prev + 1);
   };
 
+  const addBattleNode = () => {
+    const id = `battle${nodeIdCounter}`;
+    setNodes((nds) => nds.concat({
+      id,
+      type: 'sceneNode',
+      position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+      data: {
+        text: '⚡ A fierce battle begins! ⚡\n\nYou encounter a powerful enemy. What do you do?',
+        choices: [
+          { text: '⚔️ Attack with all your might!', nextScene: '' },
+          { text: '🛡️ Defend and wait for an opening', nextScene: '' },
+          { text: '🏃‍♂️ Try to flee from the battle', nextScene: '' }
+        ],
+        battle: {
+          enabled: true,
+          enemyName: 'Mighty Warrior',
+          enemyHealth: 80
+        }
+      },
+    }));
+    setNodeIdCounter(prev => prev + 1);
+  };
+
   const addNoteNode = () => {
     const id = `note${nodeIdCounter}`;
     setNodes((nds) => nds.concat({
@@ -346,7 +369,8 @@ export default function CodeEditor() {
       if (node.type === 'noteNode') return;
       scenes[node.id] = {
         text: node.data.text || '',
-        choices: node.data.choices || []
+        choices: node.data.choices || [],
+        battle: node.data.battle || undefined
       };
     });
 
@@ -379,7 +403,8 @@ export default function CodeEditor() {
       if (node.type === 'noteNode') return;
       scenes[node.id] = {
         text: node.data.text || '',
-        choices: node.data.choices || []
+        choices: node.data.choices || [],
+        battle: node.data.battle || undefined
       };
     });
 
@@ -835,6 +860,12 @@ export default function CodeEditor() {
             + Add Scene
           </button>
           <button
+            onClick={() => { addBattleNode(); setContextMenu(null); }}
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+          >
+            ⚔️ Add Battle
+          </button>
+          <button
             onClick={() => { addNoteNode(); setContextMenu(null); }}
             className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
           >
@@ -877,6 +908,12 @@ export default function CodeEditor() {
           style={{ background: accentColor }}
         >
           + Add Scene
+        </button>
+        <button
+          onClick={() => addBattleNode()}
+          className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer font-bold font-mono"
+        >
+          ⚔️ Add Battle
         </button>
         <button
           onClick={addNoteNode}

@@ -15,6 +15,11 @@ type Choice = {
 type Scene = {
   text: string;
   choices: Choice[];
+  battle?: {
+    enabled: boolean;
+    enemyName: string;
+    enemyHealth: number;
+  };
 };
 
 
@@ -92,6 +97,11 @@ function Home() {
     const sceneParam = searchParams.get('scene');
     if (sceneParam && scenes[sceneParam]) {
       setCurrentScene(sceneParam);
+      // Auto-trigger battle if scene has battle enabled
+      const sceneData = scenes[sceneParam];
+      if (sceneData.battle?.enabled) {
+        startBattle(sceneData.battle.enemyName, sceneData.battle.enemyHealth);
+      }
     }
   }, [searchParams, scenes]);
 
@@ -205,7 +215,7 @@ function Home() {
 
       <main className="h-screen bg-black text-white font-mono relative p-10 overflow-hidden">
         <div className="flex flex-col justify-center items-center min-h-screen">
-        {battle.inBattle ? (
+        {battle.inBattle || currentSceneData?.battle?.enabled ? (
           <div className="max-w-4xl w-full">
             <div className="text-3xl leading-relaxed mb-7.5 text-center text-red-400">
               <FontAwesomeIcon icon={faBolt} className="mr-2" /> BATTLE: {battle.enemyName.toUpperCase()} <FontAwesomeIcon icon={faBolt} className="ml-2" />

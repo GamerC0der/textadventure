@@ -1,0 +1,1014 @@
+"use client";
+
+import { useState, useEffect, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+
+type Scene = {
+  text: string;
+  choices: Array<{
+    text: string;
+    nextScene: string;
+  }>;
+  battle?: {
+    enabled: boolean;
+    enemyName: string;
+    enemyHealth: number;
+  };
+};
+
+type BugOptions = {
+  imageSprite?: string;
+  bugWidth?: number;
+  bugHeight?: number;
+  num_frames?: number;
+  canFly?: boolean;
+  canDie?: boolean;
+  numDeathTypes?: number;
+  zoom?: number;
+  minDelay?: number;
+  maxDelay?: number;
+  minBugs?: number;
+  maxBugs?: number;
+  minSpeed?: number;
+  maxSpeed?: number;
+  mouseOver?: string;
+};
+
+type BugController = {
+  initialize: (options?: BugOptions) => void;
+  end: () => void;
+};
+
+type AdventureState = {
+  scenes: Record<string, Scene>;
+  currentScene: string;
+  accentColor: string;
+  tabTitle: string;
+  spiders: boolean;
+  isLoading: boolean;
+  error: string | null;
+};
+
+declare global {
+  interface Window {
+    BugController: new (options?: BugOptions) => BugController;
+    currentSpiderController: BugController | null;
+  }
+}
+
+function useAdventureParams(): AdventureState {
+  const searchParams = useSearchParams();
+
+  return useMemo(() => {
+    try {
+      const dataParam = searchParams.get('data');
+      const colorParam = searchParams.get('color');
+      const titleParam = searchParams.get('title');
+      const spidersParam = searchParams.get('spiders');
+
+      const state: AdventureState = {
+        scenes: {},
+        currentScene: 'start',
+        accentColor: '#61dafb',
+        tabTitle: 'My Adventure',
+        spiders: false,
+        isLoading: false,
+        error: null,
+      };
+
+      if (dataParam) {
+        const decodedData = decodeURIComponent(dataParam);
+        const parsedScenes = JSON.parse(decodedData);
+        state.scenes = parsedScenes;
+      }
+
+      if (colorParam) {
+        state.accentColor = decodeURIComponent(colorParam);
+      }
+
+      if (titleParam) {
+        state.tabTitle = decodeURIComponent(titleParam);
+      }
+
+      if (spidersParam) {
+        state.spiders = spidersParam === '1';
+      }
+
+      return state;
+    } catch (error) {
+      console.error('Failed to parse adventure parameters:', error);
+      return {
+        scenes: {},
+        currentScene: 'start',
+        accentColor: '#61dafb',
+        tabTitle: 'My Adventure',
+        spiders: false,
+        isLoading: false,
+        error: 'Failed to load adventure data',
+      };
+    }
+  }, [searchParams]);
+}
+
+function useSpiderController(enabled: boolean) {
+  useEffect(() => {
+    if (!enabled || typeof window === 'undefined') return;
+
+    const initializeSpiderController = () => {
+      try {
+        if (!window.BugController) {
+          const script = document.createElement('script');
+          script.src = '/bug.js';
+          script.onload = () => {
+            if (window.BugController) {
+              const controller = new window.BugController({
+                imageSprite: 'spider-sprite.png',
+                bugWidth: 69,
+                bugHeight: 90,
+                num_frames: 7,
+                canFly: false,
+                canDie: true,
+                numDeathTypes: 2,
+                zoom: 6,
+                minDelay: 200,
+                maxDelay: 3000,
+                minBugs: 2,
+                maxBugs: 4,
+                minSpeed: 6,
+                maxSpeed: 13,
+                mouseOver: 'random'
+              });
+              controller.initialize();
+              window.currentSpiderController = controller;
+            }
+          };
+          document.head.appendChild(script);
+        } else {
+          const controller = new window.BugController({
+            imageSprite: 'spider-sprite.png',
+            bugWidth: 69,
+            bugHeight: 90,
+            num_frames: 7,
+            canFly: false,
+            canDie: true,
+            numDeathTypes: 2,
+            zoom: 6,
+            minDelay: 200,
+            maxDelay: 3000,
+            minBugs: 2,
+            maxBugs: 4,
+            minSpeed: 6,
+            maxSpeed: 13,
+            mouseOver: 'random'
+          });
+          controller.initialize();
+          window.currentSpiderController = controller;
+        }
+      } catch (error) {
+        console.error('Failed to initialize spider controller:', error);
+      }
+    };
+
+    const cleanupSpiderController = () => {
+      if (window.currentSpiderController) {
+        window.currentSpiderController.end();
+        window.currentSpiderController = null;
+      }
+    };
+
+    initializeSpiderController();
+
+    return cleanupSpiderController;
+  }, [enabled]);
+}
+
+const SPECIAL_SCENES = {
+  make_your_own: () => window.location.href = '/code',
+  go_home: () => window.location.href = '/',
+} as const;
+
+function LoadingScreen() {
+  return (
+    <main className="h-screen bg-black text-white font-mono flex justify-center items-center">
+      <div>Loading adventure...</div>
+    </main>
+  );
+}
+
+function ErrorScreen({
+  error,
+  accentColor,
+  onReturnToStart
+}: {
+  error: string;
+  accentColor: string;
+  onReturnToStart: () => void;
+}) {
+  return (
+    <main className="h-screen bg-black text-white font-mono flex flex-col justify-center items-center p-10">
+      <div className="text-2xl mb-5 text-center text-red-400">{error}</div>
+      <button
+        onClick={onReturnToStart}
+        className="mt-5 px-5 py-2.5 rounded font-bold font-mono cursor-pointer"
+        style={{ background: accentColor, color: "black" }}
+      >
+        Return to Start
+      </button>
+    </main>
+  );
+}
+
+function ChoiceButton({
+  choice,
+  accentColor,
+  onClick
+}: {
+  choice: { text: string; nextScene: string };
+  accentColor: string;
+  onClick: (nextScene: string) => void;
+}) {
+  return (
+    <button
+      onClick={() => onClick(choice.nextScene)}
+      className="text-lg text-white bg-transparent border-2 px-6 py-3 rounded-full cursor-pointer font-bold uppercase tracking-wide min-w-50 hover:text-black transition-colors duration-300"
+      style={{ borderColor: accentColor }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = accentColor}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+    >
+      {choice.text}
+    </button>
+  );
+}
+
+function GameScreen({
+  currentSceneData,
+  accentColor,
+  onChoice,
+  onDownload
+}: {
+  currentSceneData: Scene;
+  accentColor: string;
+  onChoice: (nextScene: string) => void;
+  onDownload: () => void;
+}) {
+  return (
+    <main className="min-h-screen bg-black text-white font-mono flex flex-col justify-center items-center p-10 relative">
+      <div className="text-2xl leading-relaxed mb-10 max-w-2xl text-center whitespace-pre-line">
+        {currentSceneData.text}
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-3.5">
+        {currentSceneData.choices.map((choice, index) => (
+          <ChoiceButton
+            key={index}
+            choice={choice}
+            accentColor={accentColor}
+            onClick={onChoice}
+          />
+        ))}
+      </div>
+
+      <button
+        onClick={onDownload}
+        className="absolute bottom-5 right-5 text-lg text-white bg-transparent border-2 px-4 py-2 rounded-full cursor-pointer font-bold uppercase tracking-wide hover:text-black transition-colors duration-300"
+        style={{ borderColor: accentColor }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = accentColor}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+      >
+        📥 Download
+      </button>
+    </main>
+  );
+}
+
+
+function PlayAdventure() {
+  const adventureState = useAdventureParams();
+  const [currentScene, setCurrentScene] = useState<string>('start');
+
+  useSpiderController(adventureState.spiders);
+
+  const downloadAdventure = () => {
+    const adventureData = {
+      scenes: adventureState.scenes,
+      accentColor: adventureState.accentColor,
+      tabTitle: adventureState.tabTitle,
+      spiders: adventureState.spiders
+    };
+
+    const blob = new Blob([JSON.stringify(adventureData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = adventureState.tabTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_adventure.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(() => {
+    if (adventureState.tabTitle) {
+      document.title = adventureState.tabTitle;
+    }
+  }, [adventureState.tabTitle]);
+
+  const handleChoice = (nextScene: string) => {
+    const specialHandler = SPECIAL_SCENES[nextScene as keyof typeof SPECIAL_SCENES];
+    if (specialHandler) {
+      specialHandler();
+      return;
+    }
+    setCurrentScene(nextScene);
+  };
+
+  const handleReturnToStart = () => {
+    setCurrentScene('start');
+  };
+
+  if (adventureState.isLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (adventureState.error) {
+    return (
+      <ErrorScreen
+        error={adventureState.error}
+        accentColor={adventureState.accentColor}
+        onReturnToStart={handleReturnToStart}
+      />
+    );
+  }
+
+  if (Object.keys(adventureState.scenes).length === 0) {
+    return (
+      <ErrorScreen
+        error="No adventure data found"
+        accentColor={adventureState.accentColor}
+        onReturnToStart={handleReturnToStart}
+      />
+    );
+  }
+
+  const currentSceneData = adventureState.scenes[currentScene];
+
+  if (!currentSceneData) {
+    return (
+      <ErrorScreen
+        error={'Scene "' + currentScene + '" not found!'}
+        accentColor={adventureState.accentColor}
+        onReturnToStart={handleReturnToStart}
+      />
+    );
+  }
+
+  return (
+    <GameScreen
+      currentSceneData={currentSceneData}
+      accentColor={adventureState.accentColor}
+      onChoice={handleChoice}
+      onDownload={downloadAdventure}
+    />
+  );
+}
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 800px;
+            text-align: center;
+            white-space: pre-line;
+        }
+
+        .choices {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            font-size: 18px;
+            color: white;
+            background-color: transparent;
+            border: 2px solid ${colorValue};
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 200px;
+            transition: background-color 0.3s;
+        }
+
+        .choice-btn:hover {
+            background-color: ${colorValue};
+            color: black;
+        }
+
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .error-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .retry-btn {
+            background: ${colorValue};
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .bug {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            transition: all 0.1s linear;
+        }
+
+        .spider {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            transition: all 0.1s linear;
+        }
+
+        .battle-container {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .battle-title {
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ff6b6b;
+        }
+
+        .health-bars {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .health-bar {
+            padding: 20px;
+            border: 2px solid #4ecdc4;
+            border-radius: 8px;
+            background-color: black;
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .enemy-health-bar {
+            border-color: #ff6b6b;
+        }
+
+        .health-bar-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .health-bar-fill {
+            width: 100%;
+            height: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            height: 100%;
+            background-color: #4ecdc4;
+            transition: width 0.3s ease;
+        }
+
+        .enemy-health-fill {
+            background-color: #ff6b6b;
+        }
+
+        .battle-log {
+            background-color: black;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            min-height: 120px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .battle-actions {
+            text-align: center;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .battle-btn {
+            font-size: 20px;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .attack-btn {
+            background-color: #4ecdc4;
+            color: black;
+        }
+
+        .attack-btn:hover:not(:disabled) {
+            background-color: #26a69a;
+        }
+
+        .defend-btn {
+            background-color: #ffeaa7;
+            color: black;
+        }
+
+        .defend-btn:hover:not(:disabled) {
+            background-color: #fdcb6e;
+        }
+
+        .disabled-btn {
+            background-color: #666;
+            color: white;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        const SCENE_DATA = ${scenesJson};
+        const ACCENT_COLOR = "${colorValue}";
+        const TAB_TITLE = "${titleValue}";
+        const SPIDERS_ENABLED = ${spidersEnabled};
+        document.title = TAB_TITLE;
+
+        let currentScene = 'start';
+        let battleState = {
+            inBattle: false,
+            playerHealth: 100,
+            enemyMaxHealth: 0,
+            enemyHealth: 0,
+            enemyName: '',
+            battleLog: [],
+            turn: 'player'
+        };
+
+        class BugController {
+            constructor(options = {}) {
+                this.minBugs = options.minBugs || 3;
+                this.maxBugs = options.maxBugs || 8;
+                this.mouseOver = options.mouseOver || 'fly';
+                this.canFly = options.canFly !== false;
+                this.canDie = options.canDie !== false;
+                this.zoom = options.zoom || 20;
+                this.bugs = [];
+                this.interval = null;
+                this.mouseX = 0;
+                this.mouseY = 0;
+            }
+
+            initialize() {
+                this.createBugs();
+                this.startAnimation();
+                this.addEventListeners();
+            }
+
+            createBugs() {
+                const numBugs = Math.floor(Math.random() * (this.maxBugs - this.minBugs + 1)) + this.minBugs;
+                for (let i = 0; i < numBugs; i++) {
+                    this.createBug();
+                }
+            }
+
+            createBug() {
+                const bug = document.createElement('div');
+                bug.className = 'bug';
+                bug.innerHTML = '🐛';
+                bug.style.fontSize = this.zoom + 'px';
+                bug.style.left = Math.random() * window.innerWidth + 'px';
+                bug.style.top = Math.random() * window.innerHeight + 'px';
+                bug.style.position = 'absolute';
+                document.body.appendChild(bug);
+                this.bugs.push(bug);
+            }
+
+            startAnimation() {
+                this.interval = setInterval(() => {
+                    this.bugs.forEach(bug => {
+                        if (this.canFly) {
+                            const angle = Math.random() * 2 * Math.PI;
+                            const distance = Math.random() * 50;
+                            const newX = parseFloat(bug.style.left) + Math.cos(angle) * distance;
+                            const newY = parseFloat(bug.style.top) + Math.sin(angle) * distance;
+
+                            bug.style.left = Math.max(0, Math.min(window.innerWidth - 50, newX)) + 'px';
+                            bug.style.top = Math.max(0, Math.min(window.innerHeight - 50, newY)) + 'px';
+                        }
+                    });
+                }, 1000);
+            }
+
+            addEventListeners() {
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+
+                    if (this.mouseOver === 'fly') {
+                        this.bugs.forEach(bug => {
+                            const bugX = parseFloat(bug.style.left) + 25;
+                            const bugY = parseFloat(bug.style.top) + 25;
+                            const distance = Math.sqrt((bugX - this.mouseX) ** 2 + (bugY - this.mouseY) ** 2);
+
+                            if (distance < 100) {
+                                const angle = Math.atan2(bugY - this.mouseY, bugX - this.mouseX);
+                                const newX = bugX + Math.cos(angle) * 20;
+                                const newY = bugY + Math.sin(angle) * 20;
+                                bug.style.left = Math.max(0, Math.min(window.innerWidth - 50, newX - 25)) + 'px';
+                                bug.style.top = Math.max(0, Math.min(window.innerHeight - 50, newY - 25)) + 'px';
+                            }
+                        });
+                    }
+                });
+            }
+
+            end() {
+                if (this.interval) {
+                    clearInterval(this.interval);
+                }
+                this.bugs.forEach(bug => {
+                    if (bug.parentNode) {
+                        bug.parentNode.removeChild(bug);
+                    }
+                });
+                this.bugs = [];
+            }
+        }
+
+        class SpiderController {
+            constructor(options = {}) {
+                this.minDelay = options.minDelay || 0;
+                this.maxDelay = options.maxDelay || 3000;
+                this.minBugs = options.minBugs || 2;
+                this.maxBugs = options.maxBugs || 4;
+                this.mouseOver = options.mouseOver || 'random';
+                this.canFly = options.canFly !== false;
+                this.canDie = options.canDie !== false;
+                this.zoom = options.zoom || 15;
+                this.bugs = [];
+                this.interval = null;
+                this.mouseX = 0;
+                this.mouseY = 0;
+            }
+
+            initialize() {
+                this.createBugs();
+                this.startAnimation();
+                this.addEventListeners();
+            }
+
+            createBugs() {
+                const numBugs = Math.floor(Math.random() * (this.maxBugs - this.minBugs + 1)) + this.minBugs;
+                for (let i = 0; i < numBugs; i++) {
+                    setTimeout(() => this.createBug(), Math.random() * this.maxDelay);
+                }
+            }
+
+            createBug() {
+                const bug = document.createElement('div');
+                bug.className = 'spider';
+                bug.innerHTML = '🕷️';
+                bug.style.fontSize = this.zoom + 'px';
+                bug.style.left = Math.random() * window.innerWidth + 'px';
+                bug.style.top = Math.random() * window.innerHeight + 'px';
+                bug.style.position = 'absolute';
+                document.body.appendChild(bug);
+                this.bugs.push(bug);
+            }
+
+            startAnimation() {
+                this.interval = setInterval(() => {
+                    this.bugs.forEach(bug => {
+                        if (this.canFly) {
+                            const angle = Math.random() * 2 * Math.PI;
+                            const distance = Math.random() * 30;
+                            const newX = parseFloat(bug.style.left) + Math.cos(angle) * distance;
+                            const newY = parseFloat(bug.style.top) + Math.sin(angle) * distance;
+
+                            bug.style.left = Math.max(0, Math.min(window.innerWidth - 50, newX)) + 'px';
+                            bug.style.top = Math.max(0, Math.min(window.innerHeight - 50, newY)) + 'px';
+                        }
+                    });
+                }, 1000);
+            }
+
+            addEventListeners() {
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+
+                    if (this.mouseOver === 'random') {
+                        this.bugs.forEach(bug => {
+                            const bugX = parseFloat(bug.style.left) + 25;
+                            const bugY = parseFloat(bug.style.top) + 25;
+                            const distance = Math.sqrt((bugX - this.mouseX) ** 2 + (bugY - this.mouseY) ** 2);
+
+                            if (distance < 100) {
+                                const randomX = Math.random() * window.innerWidth;
+                                const randomY = Math.random() * window.innerHeight;
+                                bug.style.left = Math.max(0, Math.min(window.innerWidth - 50, randomX)) + 'px';
+                                bug.style.top = Math.max(0, Math.min(window.innerHeight - 50, randomY)) + 'px';
+                            }
+                        });
+                    }
+                });
+            }
+
+            end() {
+                if (this.interval) {
+                    clearInterval(this.interval);
+                }
+                this.bugs.forEach(bug => {
+                    if (bug.parentNode) {
+                        bug.parentNode.removeChild(bug);
+                    }
+                });
+                this.bugs = [];
+            }
+        }
+
+        function startBattle(enemyName, enemyHealth) {
+            battleState = {
+                inBattle: true,
+                playerHealth: 100,
+                enemyMaxHealth: enemyHealth,
+                enemyHealth,
+                enemyName,
+                battleLog: ['A ' + enemyName + ' appears!'],
+                turn: 'player'
+            };
+            render();
+        }
+
+        function playerAttack() {
+            if (battleState.turn !== 'player' || battleState.enemyHealth <= 0) return;
+
+            const damage = Math.floor(Math.random() * 20) + 10;
+            const newEnemyHealth = Math.max(0, battleState.enemyHealth - damage);
+            const log = [...battleState.battleLog, 'You attack for ' + damage + ' damage!'];
+
+            if (newEnemyHealth <= 0) {
+                log.push('You defeated the ' + battleState.enemyName + '!');
+                setTimeout(() => {
+                    battleState.inBattle = false;
+                    battleState.battleLog = [];
+                    render();
+                }, 2000);
+            }
+
+            battleState.enemyHealth = newEnemyHealth;
+            battleState.battleLog = log;
+            battleState.turn = 'enemy';
+
+            if (newEnemyHealth > 0) {
+                setTimeout(() => enemyAttack(false), 1000);
+            }
+            render();
+        }
+
+        function playerDefend() {
+            if (battleState.turn !== 'player' || battleState.enemyHealth <= 0) return;
+
+            const log = [...battleState.battleLog, 'You take a defensive stance!'];
+            battleState.battleLog = log;
+            battleState.turn = 'enemy';
+
+            setTimeout(() => enemyAttack(true), 1000);
+            render();
+        }
+
+        function enemyAttack(playerIsDefending = false) {
+            const baseDamage = Math.floor(Math.random() * 15) + 5;
+            const damage = playerIsDefending ? Math.floor(baseDamage * 0.5) : baseDamage;
+            const newPlayerHealth = Math.max(0, battleState.playerHealth - damage);
+            const log = [...battleState.battleLog, playerIsDefending
+                ? 'The ' + battleState.enemyName + ' attacks for ' + baseDamage + ' damage, but you defend and only take ' + damage + '!'
+                : 'The ' + battleState.enemyName + ' attacks for ' + damage + ' damage!'];
+
+            if (newPlayerHealth <= 0) {
+                log.push('You were defeated! Game Over.');
+                setTimeout(() => {
+                    battleState.inBattle = false;
+                    battleState.battleLog = [];
+                    battleState.playerHealth = 100;
+                    currentScene = 'start';
+                    render();
+                }, 2000);
+            }
+
+            battleState.playerHealth = newPlayerHealth;
+            battleState.battleLog = log;
+            battleState.turn = 'player';
+            render();
+        }
+
+        function handleChoice(nextScene) {
+            if (nextScene === 'make_your_own') {
+                window.location.href = '/code';
+                return;
+            }
+            if (nextScene === 'go_home') {
+                window.location.href = '/';
+                return;
+            }
+
+            currentScene = nextScene;
+
+            // Check if scene has battle
+            const sceneData = SCENE_DATA[currentScene];
+            if (sceneData && sceneData.battle && sceneData.battle.enabled) {
+                startBattle(sceneData.battle.enemyName, sceneData.battle.enemyHealth);
+            } else {
+                render();
+            }
+        }
+
+        function renderBattle() {
+            return '<div class="battle-container">' +
+                '<div class="battle-title">⚡ BATTLE: ' + battleState.enemyName.toUpperCase() + ' ⚡</div>' +
+                '<div class="health-bars">' +
+                    '<div class="health-bar">' +
+                        '<div class="health-bar-title">🛡️ PLAYER</div>' +
+                        '<div class="health-bar-fill">' +
+                            '<div class="health-fill" style="width: ' + ((battleState.playerHealth / 100) * 100) + '%"></div>' +
+                        '</div>' +
+                        '<div>HP: ' + battleState.playerHealth + '/100</div>' +
+                    '</div>' +
+                    '<div class="health-bar enemy-health-bar">' +
+                        '<div class="health-bar-title">👹 ' + battleState.enemyName.toUpperCase() + '</div>' +
+                        '<div class="health-bar-fill">' +
+                            '<div class="health-fill enemy-health-fill" style="width: ' + ((battleState.enemyHealth / battleState.enemyMaxHealth) * 100) + '%"></div>' +
+                        '</div>' +
+                        '<div>HP: ' + battleState.enemyHealth + '/' + battleState.enemyMaxHealth + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="battle-log">' +
+                    battleState.battleLog.map(log => '<div>' + log + '</div>').join('') +
+                '</div>' +
+                '<div class="battle-actions">' +
+                    '<button class="battle-btn attack-btn ' + (battleState.turn !== 'player' || battleState.enemyHealth <= 0 ? 'disabled-btn' : '') + '" onclick="playerAttack()">⚡ ATTACK ⚡</button>' +
+                    '<button class="battle-btn defend-btn ' + (battleState.turn !== 'player' || battleState.enemyHealth <= 0 ? 'disabled-btn' : '') + '" onclick="playerDefend()">🛡️ DEFEND 🛡️</button>' +
+                '</div>' +
+            '</div>';
+        }
+
+        function render() {
+            const sceneData = SCENE_DATA[currentScene];
+            if (!sceneData) {
+                document.getElementById('app').innerHTML = '<div class="error-container">' +
+                    '<div class="error-text">Scene "' + currentScene + '" not found!</div>' +
+                    '<button class="retry-btn" onclick="currentScene=\'start\'; render()">Return to Start</button>' +
+                '</div>';
+                return;
+            }
+
+            if (battleState.inBattle) {
+                document.getElementById('app').innerHTML = renderBattle();
+                return;
+            }
+
+            document.getElementById('app').innerHTML = '<div class="container">' +
+                '<div class="text">' + sceneData.text + '</div>' +
+                '<div class="choices">' +
+                    sceneData.choices.map(choice => '<button class="choice-btn" onclick="handleChoice(\'' + choice.nextScene + '\')">' + choice.text + '</button>').join('') +
+                '</div>' +
+            '</div>';
+        }
+
+        // Initialize
+        if (SPIDERS_ENABLED) {
+            new SpiderController({
+                minDelay: 200,
+                maxDelay: 3000,
+                minBugs: 2,
+                maxBugs: 4,
+                mouseOver: 'random',
+                canFly: false,
+                canDie: true,
+                zoom: 15
+            }).initialize();
+        }
+
+        // Check if initial scene has battle
+        const initialSceneData = SCENE_DATA[currentScene];
+        if (initialSceneData && initialSceneData.battle && initialSceneData.battle.enabled) {
+            startBattle(initialSceneData.battle.enemyName, initialSceneData.battle.enemyHealth);
+        } else {
+            render();
+        }
+    </script>
+</html>\`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = titleValue.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_adventure.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(() => {
+    if (adventureState.tabTitle) {
+      document.title = adventureState.tabTitle;
+    }
+  }, [adventureState.tabTitle]);
+
+  const handleChoice = (nextScene: string) => {
+    const specialHandler = SPECIAL_SCENES[nextScene as keyof typeof SPECIAL_SCENES];
+    if (specialHandler) {
+      specialHandler();
+      return;
+    }
+    setCurrentScene(nextScene);
+  };
+
+  const handleReturnToStart = () => {
+    setCurrentScene('start');
+  };
+
+  if (adventureState.isLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (adventureState.error) {
+    return (
+      <ErrorScreen
+        error={adventureState.error}
+        accentColor={adventureState.accentColor}
+        onReturnToStart={handleReturnToStart}
+      />
+    );
+  }
+
+  if (Object.keys(adventureState.scenes).length === 0) {
+    return (
+      <ErrorScreen
+        error="No adventure data found"
+        accentColor={adventureState.accentColor}
+        onReturnToStart={handleReturnToStart}
+      />
+    );
+  }
+
+  const currentSceneData = adventureState.scenes[currentScene];
+
+  if (!currentSceneData) {
+    return (
+      <ErrorScreen
+        error={'Scene "' + currentScene + '" not found!'}
+        accentColor={adventureState.accentColor}
+        onReturnToStart={handleReturnToStart}
+      />
+    );
+  }
+
+  return (
+    <GameScreen
+      currentSceneData={currentSceneData}
+      accentColor={adventureState.accentColor}
+      onChoice={handleChoice}
+      onDownload={downloadAdventure}
+    />
+  );
+}
+
+function PlayAdventureWrapper() {
+  return (
+    <Suspense fallback={<div>Loading adventure...</div>}>
+      <PlayAdventure />
+    </Suspense>
+  );
+}
+
+export default PlayAdventureWrapper;

@@ -128,6 +128,21 @@ function ColorPickerNode({ data }: { data: any }) {
   );
 }
 
+function TutorialNode({ data }: { data: any }) {
+  const accentColor = data.accentColor || '#61dafb';
+  return (
+    <div className="bg-blue-900 border-2 rounded-lg p-3.75 text-white font-mono min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
+      <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
+        📚 Tutorial
+      </div>
+
+      <div className="text-sm text-blue-200 leading-relaxed">
+        Scene names are case-sensitive, all lowercase. Change forest/cave to your scene names.
+      </div>
+    </div>
+  );
+}
+
 function NoteNode({ data, id, accentColor = '#61dafb' }: { data: any; id: string; accentColor?: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(data.text || '');
@@ -283,6 +298,7 @@ function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: strin
 const nodeTypes: NodeTypes = {
   sceneNode: SceneNode,
   colorPickerNode: ColorPickerNode,
+  tutorialNode: TutorialNode,
   noteNode: NoteNode,
 };
 
@@ -302,8 +318,15 @@ const initialNodes: Node[] = [
   {
     id: 'color-picker',
     type: 'colorPickerNode',
-    position: { x: 50, y: 25 },
+    position: { x: -18, y: 25 },
     data: { title: 'My Adventure', spiders: false },
+  },
+  {
+    id: 'tutorial',
+    type: 'tutorialNode',
+    position: { x: -18, y: 442 },
+    data: {},
+    draggable: false,
   },
 ];
 
@@ -369,7 +392,7 @@ export default function CodeEditor() {
   const startPlay = () => {
     const scenes: Record<string, any> = {};
     nodes.forEach(node => {
-      if (node.type === 'noteNode') return;
+      if (node.type === 'noteNode' || node.type === 'tutorialNode') return;
       scenes[node.id] = {
         text: node.data.text || '',
         choices: node.data.choices || [],
@@ -403,7 +426,7 @@ export default function CodeEditor() {
   const downloadAdventure = () => {
     const scenes: Record<string, any> = {};
     nodes.forEach(node => {
-      if (node.type === 'noteNode') return;
+      if (node.type === 'noteNode' || node.type === 'tutorialNode') return;
       scenes[node.id] = {
         text: node.data.text || '',
         choices: node.data.choices || [],
@@ -839,6 +862,15 @@ export default function CodeEditor() {
           onSpidersChange: (newSpiders: boolean) => {
             setSpiders(newSpiders);
           }
+        }}
+      />
+    ),
+    tutorialNode: (props: any) => (
+      <TutorialNode
+        {...props}
+        data={{
+          ...props.data,
+          accentColor,
         }}
       />
     ),

@@ -635,6 +635,118 @@ export default function CodeEditor() {
             font-family: 'Courier New', monospace;
         }
 
+        .battle-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        .battle-title {
+            font-size: 48px;
+            margin-bottom: 40px;
+            text-align: center;
+            color: #a855f7;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .battle-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 40px;
+        }
+
+        .stat-box {
+            padding: 20px;
+            border: 2px solid;
+            border-radius: 8px;
+            background-color: black;
+            min-width: 200px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .player-box {
+            border-color: #06b6d4;
+        }
+
+        .enemy-box {
+            border-color: #a855f7;
+        }
+
+        .stat-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .health-bar {
+            width: 200px;
+            height: 10px;
+            background-color: #374151;
+            border-radius: 5px;
+            margin-top: 6px;
+        }
+
+        .health-fill {
+            height: 100%;
+            border-radius: 5px;
+        }
+
+        .player-health-fill {
+            background-color: #06b6d4;
+        }
+
+        .enemy-health-fill {
+            background-color: #a855f7;
+        }
+
+        .battle-log {
+            background-color: black;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            min-height: 120px;
+            font-size: 16px;
+            line-height: 1.5;
+            width: 100%;
+            max-width: 800px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .battle-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .battle-btn {
+            font-size: 20px;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid ${colorValue};
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .battle-btn.enabled {
+            background-color: ${colorValue};
+            color: black;
+        }
+
+        .battle-btn.disabled {
+            background-color: #374151;
+            color: white;
+            cursor: not-allowed;
+        }
+
         .bug {
             position: absolute;
             pointer-events: none;
@@ -659,6 +771,15 @@ export default function CodeEditor() {
         const TAB_TITLE = "${titleValue}";
         const SPIDERS_ENABLED = ${spidersEnabled};
         document.title = TAB_TITLE;
+
+        const PLAYER_MAX_HEALTH = 100;
+        const BATTLE_TIMEOUT = 2000;
+        const ATTACK_DAMAGE_MIN = 10;
+        const ATTACK_DAMAGE_MAX = 20;
+        const ENEMY_DAMAGE_MIN = 5;
+        const ENEMY_DAMAGE_MAX = 15;
+        const DEFENSE_MULTIPLIER = 0.5;
+
         class BugController {
             constructor(options = {}) {
                 this.minBugs = options.minBugs || 3;
@@ -825,6 +946,15 @@ export default function CodeEditor() {
                 this.container = document.getElementById('app');
                 this.bugController = null;
                 this.spiderController = null;
+                this.battle = {
+                    inBattle: false,
+                    playerHealth: PLAYER_MAX_HEALTH,
+                    enemyMaxHealth: 0,
+                    enemyHealth: 0,
+                    enemyName: '',
+                    battleLog: [],
+                    turn: 'player'
+                };
                 this.render();
                 this.initializeEffects();
             }
@@ -855,6 +985,88 @@ export default function CodeEditor() {
                 }
             }
 
+            startBattle(enemyName, enemyHealth) {
+                this.battle = {
+                    inBattle: true,
+                    playerHealth: PLAYER_MAX_HEALTH,
+                    enemyMaxHealth: enemyHealth,
+                    enemyHealth,
+                    enemyName,
+                    battleLog: [\`A \${enemyName} appears!\`],
+                    turn: 'player'
+                };
+                this.render();
+            }
+
+            playerAttack() {
+                const damage = Math.floor(Math.random() * (ATTACK_DAMAGE_MAX - ATTACK_DAMAGE_MIN + 1)) + ATTACK_DAMAGE_MIN;
+                const newEnemyHealth = Math.max(0, this.battle.enemyHealth - damage);
+                const log = [...this.battle.battleLog, \`You attack for \${damage} damage!\`];
+
+                if (newEnemyHealth <= 0) {
+                    log.push(\`You defeated the \${this.battle.enemyName}!\`);
+                    setTimeout(() => {
+                        this.battle = { ...this.battle, inBattle: false, battleLog: [] };
+                        this.currentScene = 'start';
+                        this.render();
+                    }, BATTLE_TIMEOUT);
+                }
+
+                this.battle = {
+                    ...this.battle,
+                    enemyHealth: newEnemyHealth,
+                    battleLog: log,
+                    turn: 'enemy'
+                };
+
+                this.render();
+
+                if (newEnemyHealth > 0) {
+                    setTimeout(() => this.enemyAttack(false), 1000);
+                }
+            }
+
+            playerDefend() {
+                const log = [...this.battle.battleLog, \`You take a defensive stance!\`];
+
+                this.battle = {
+                    ...this.battle,
+                    battleLog: log,
+                    turn: 'enemy'
+                };
+
+                this.render();
+
+                setTimeout(() => this.enemyAttack(true), 1000);
+            }
+
+            enemyAttack(playerIsDefending = false) {
+                const baseDamage = Math.floor(Math.random() * (ENEMY_DAMAGE_MAX - ENEMY_DAMAGE_MIN + 1)) + ENEMY_DAMAGE_MIN;
+                const damage = playerIsDefending ? Math.floor(baseDamage * DEFENSE_MULTIPLIER) : baseDamage;
+                const newPlayerHealth = Math.max(0, this.battle.playerHealth - damage);
+                const log = [...this.battle.battleLog, playerIsDefending
+                    ? \`The \${this.battle.enemyName} attacks for \${baseDamage} damage, but you defend and only take \${damage}!\`
+                    : \`The \${this.battle.enemyName} attacks for \${damage} damage!\`];
+
+                if (newPlayerHealth <= 0) {
+                    log.push('You were defeated! Game Over.');
+                    setTimeout(() => {
+                        this.currentScene = 'start';
+                        this.battle = { ...this.battle, inBattle: false, battleLog: [], playerHealth: PLAYER_MAX_HEALTH };
+                        this.render();
+                    }, BATTLE_TIMEOUT);
+                }
+
+                this.battle = {
+                    ...this.battle,
+                    playerHealth: newPlayerHealth,
+                    battleLog: log,
+                    turn: 'player'
+                };
+
+                this.render();
+            }
+
             handleChoice(nextScene) {
                 if (nextScene === 'make_your_own') {
                     window.location.href = 'https://textadventure-creator.vercel.app/code';
@@ -865,7 +1077,13 @@ export default function CodeEditor() {
                     return;
                 }
                 this.currentScene = nextScene;
-                this.render();
+
+                const sceneData = SCENE_DATA[this.currentScene];
+                if (sceneData && sceneData.battle?.enabled) {
+                    this.startBattle(sceneData.battle.enemyName, sceneData.battle.enemyHealth);
+                } else {
+                    this.render();
+                }
             }
 
             render() {
@@ -876,6 +1094,52 @@ export default function CodeEditor() {
                         <div class="error-container">
                             <div class="error-text">Scene "\${this.currentScene}" not found!</div>
                             <button class="retry-btn" onclick="app.handleChoice('start')">Return to Start</button>
+                        </div>
+                    \`;
+                    return;
+                }
+
+                if (this.battle.inBattle || sceneData.battle?.enabled) {
+                    const choicesHtml = sceneData.choices.map((choice, index) => \`
+                        <button class="choice-btn" onclick="app.handleChoice('\${choice.nextScene}')">
+                            \${choice.text}
+                        </button>
+                    \`).join('');
+
+                    this.container.innerHTML = \`
+                        <div class="battle-container">
+                            <div class="battle-title">BATTLE: \${this.battle.enemyName.toUpperCase()}</div>
+
+                            <div class="battle-stats">
+                                <div class="stat-box player-box">
+                                    <div class="stat-title">PLAYER</div>
+                                    <div>HP: \${this.battle.playerHealth}/\${PLAYER_MAX_HEALTH}</div>
+                                    <div class="health-bar">
+                                        <div class="health-fill player-health-fill" style="width: \${(this.battle.playerHealth / PLAYER_MAX_HEALTH) * 100}%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="stat-box enemy-box">
+                                    <div class="stat-title">\${this.battle.enemyName.toUpperCase()}</div>
+                                    <div>HP: \${this.battle.enemyHealth}/\${this.battle.enemyMaxHealth}</div>
+                                    <div class="health-bar">
+                                        <div class="health-fill enemy-health-fill" style="width: \${(this.battle.enemyHealth / this.battle.enemyMaxHealth) * 100}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="battle-log">
+                                \${this.battle.battleLog.map(log => \`<div>\${log}</div>\`).join('')}
+                            </div>
+
+                            <div class="battle-buttons">
+                                <button class="battle-btn \${this.battle.turn === 'player' && this.battle.enemyHealth > 0 ? 'enabled' : 'disabled'}" onclick="app.playerAttack()">
+                                    ATTACK
+                                </button>
+                                \${sceneData.battle?.defendEnabled !== false ? \`<button class="battle-btn \${this.battle.turn === 'player' && this.battle.enemyHealth > 0 ? 'enabled' : 'disabled'}" onclick="app.playerDefend()">
+                                    DEFEND
+                                </button>\` : ''}
+                            </div>
                         </div>
                     \`;
                     return;

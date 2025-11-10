@@ -292,7 +292,7 @@ function GameScreen({
 
           <div className="flex justify-between mb-7.5">
             <div className="p-5 border-2 border-cyan-500 rounded-lg bg-black">
-              <div className="text-xl mb-2.5">🛡️ PLAYER</div>
+              <div className="text-xl mb-2.5">PLAYER</div>
               <div className="text-lg">HP: {battle.playerHealth}/{PLAYER_MAX_HEALTH}</div>
               <div className="w-50 h-2.5 bg-gray-600 rounded mt-1.5">
                 <div
@@ -303,7 +303,7 @@ function GameScreen({
             </div>
 
             <div className="p-5 border-2 border-purple-500 rounded-lg bg-black">
-              <div className="text-xl mb-2.5">👹 {battle.enemyName.toUpperCase()}</div>
+              <div className="text-xl mb-2.5">{battle.enemyName.toUpperCase()}</div>
               <div className="text-lg">HP: {battle.enemyHealth}/{battle.enemyMaxHealth}</div>
               <div className="w-50 h-2.5 bg-gray-600 rounded mt-1.5">
                 <div
@@ -582,7 +582,7 @@ function PlayAdventure() {
   if (!currentSceneData) {
     return (
       <ErrorScreen
-        error={'Scene "' + currentScene + '" not found!'}
+        error={currentScene === '' ? 'Make sure to input a scene name.' : 'Scene "' + currentScene + '" not found!'}
         accentColor={adventureState.accentColor}
         onReturnToStart={handleReturnToStart}
       />

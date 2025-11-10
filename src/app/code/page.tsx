@@ -7,7 +7,7 @@ import ReactFlow, {
   Connection,
   useNodesState,
   useEdgesState,
-  Controls,
+  useReactFlow,
   Background,
   Edge,
   Node,
@@ -15,7 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpider, faPlus, faFileCode, faArrowLeft, faPlusCircle, faNoteSticky, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faSpider, faPlus, faFileCode, faArrowLeft, faPlusCircle, faNoteSticky, faBook, faMinus, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { GiSpiderAlt } from 'react-icons/gi';
 
 const NODE_MIN_WIDTH = 200;
@@ -427,6 +427,23 @@ const SceneNode = ({ data, id, accentColor = '#f97316' }: { data: any; id: strin
     </div>
   );
 };
+
+function CustomControls() {
+  const { zoomIn, zoomOut, fitView } = useReactFlow();
+  return (
+    <div className="absolute bottom-4 left-4 bg-gray-900 border border-gray-600 rounded-xl p-2 flex gap-2 z-10">
+      <button onClick={() => zoomIn({ duration: 300 })} className="w-8 h-8 bg-gray-700 hover:bg-gray-600 text-white rounded flex items-center justify-center transition-colors duration-200" title="Zoom In">
+        <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
+      </button>
+      <button onClick={() => zoomOut({ duration: 300 })} className="w-8 h-8 bg-gray-700 hover:bg-gray-600 text-white rounded flex items-center justify-center transition-colors duration-200" title="Zoom Out">
+        <FontAwesomeIcon icon={faMinus} className="w-4 h-4" />
+      </button>
+      <button onClick={() => fitView({ duration: 300 })} className="w-8 h-8 bg-gray-700 hover:bg-gray-600 text-white rounded flex items-center justify-center transition-colors duration-200" title="Reset View">
+        <FontAwesomeIcon icon={faRotateLeft} className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
 
 const nodeTypes: NodeTypes = {
   sceneNode: SceneNode,
@@ -1457,8 +1474,8 @@ Test Game
         fitView
         className="bg-black"
       >
-        <Controls className="bg-gray-900 border" style={{ borderColor: accentColor }} />
         <Background color="#333" gap={16} />
+        <CustomControls />
       </ReactFlow>
 
     </div>

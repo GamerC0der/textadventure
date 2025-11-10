@@ -945,7 +945,24 @@ export default function CodeEditor() {
   }), [setNodes, accentColor, tabTitle, spiders]);
 
   return (
-    <div className="h-screen bg-black" onContextMenu={handleContextMenu} onClick={handleClick}>
+    <div className="h-screen bg-black flex" onContextMenu={handleContextMenu} onClick={handleClick}>
+      <div className="w-1/4 bg-gray-900 border-r border-gray-700 flex flex-col">
+        <div className="p-4">
+          <button
+            onClick={() => router.back()}
+            className="text-white border border-gray-600 px-4 py-2 rounded-xl cursor-pointer font-bold hover:bg-gray-800"
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
+            Back
+          </button>
+        </div>
+        <div className="p-4 flex-1">
+          <h2 className="text-white text-xl font-bold mb-4">Tutorial</h2>
+          <p className="text-gray-300 text-sm leading-relaxed">
+            To add a choice, press the Add Choice button.
+          </p>
+        </div>
+      </div>
       {contextMenu && (
         <div
           className="absolute z-50 bg-gray-800 border rounded shadow-lg py-1"
@@ -1003,15 +1020,6 @@ export default function CodeEditor() {
           </button>
         </div>
       )}
-      <div className="absolute top-2.5 left-2.5 z-10">
-        <button
-          onClick={() => router.back()}
-          className="text-white border border-gray-600 px-4 py-2 rounded-xl cursor-pointer font-bold "
-        >
-          <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
-          Back
-        </button>
-      </div>
       <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">
         <div className="relative">
           <button
@@ -1097,6 +1105,7 @@ Test Game
         <Controls className="bg-gray-900 border" style={{ borderColor: accentColor }} />
         <Background color="#333" gap={16} />
       </ReactFlow>
+
     </div>
   );
 }

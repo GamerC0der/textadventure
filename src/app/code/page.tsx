@@ -969,6 +969,23 @@ export default function CodeEditor() {
               </div>
             </div>
           </div>
+          <p className="text-gray-300 text-sm leading-relaxed mt-16">
+            When adding a choice, enter "scene1" in the target scene field to make it go to your first scene.
+          </p>
+          <div className="mt-4 flex items-center gap-1.25 opacity-80">
+            <input
+              type="text"
+              value="New choice"
+              readOnly
+              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white text-xs px-2 py-1"
+            />
+            <input
+              type="text"
+              value="scene1"
+              readOnly
+              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white text-xs px-2 py-1"
+            />
+          </div>
         </div>
       </div>
       <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">

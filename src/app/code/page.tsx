@@ -15,7 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpider, faPlus, faFileCode, faArrowLeft, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faSpider, faPlus, faFileCode, faArrowLeft, faPlusCircle, faNoteSticky } from '@fortawesome/free-solid-svg-icons';
 import { GiSpiderAlt } from 'react-icons/gi';
 
 const NODE_MIN_WIDTH = 200;
@@ -123,13 +123,13 @@ function ColorPickerNode({ data }: { data: any }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white " style={{ borderColor: accentColor, minWidth: NODE_MIN_WIDTH, maxWidth: NODE_MAX_WIDTH }}>
-      <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
+    <div className="bg-gray-900 border-2 rounded-xl p-4 text-white shadow-lg" style={{ borderColor: accentColor, minWidth: NODE_MIN_WIDTH, maxWidth: NODE_MAX_WIDTH }}>
+      <div className="text-lg font-bold mb-3" style={{ color: accentColor }}>
         Theme Settings
       </div>
 
-      <div className="mb-3.75">
-        <div className="text-xs text-gray-400 mb-1.25">
+      <div className="mb-4">
+        <div className="text-sm text-gray-300 mb-2">
           Tab Title
         </div>
         <input
@@ -137,35 +137,35 @@ function ColorPickerNode({ data }: { data: any }) {
           value={title || 'My Adventure'}
           onChange={(e) => onTitleChange?.(e.target.value)}
           placeholder="Enter tab title..."
-          className="w-full bg-gray-800 border border-gray-600 rounded text-white  text-xs px-2 py-1.5 box-border"
+          className="w-full bg-gray-700 border border-gray-500 rounded-lg text-white text-sm px-3 py-2 box-border"
         />
       </div>
 
-      <div className="mb-3.75">
-        <div className="text-xs text-gray-400 mb-1.25">
+      <div className="mb-4">
+        <div className="text-sm text-gray-300 mb-2">
           Enable Spiders
         </div>
         <label
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`flex items-center gap-3 cursor-pointer p-2 rounded border transition-all duration-200 ${
-            isHovered ? 'bg-gray-700 border-gray-500' : 'bg-gray-800 border-gray-600'
+          className={`flex items-center gap-4 cursor-pointer p-3 rounded-lg border transition-all duration-200 ${
+            isHovered ? 'bg-gray-600 border-gray-400' : 'bg-gray-700 border-gray-500'
           }`}
         >
-          <div className="relative w-5 h-5">
+          <div className="relative w-6 h-6">
             <input
               type="checkbox"
               checked={spiders || false}
               onChange={(e) => onSpidersChange?.(e.target.checked)}
               className="absolute opacity-0 w-full h-full m-0 cursor-pointer"
             />
-            <div className={`absolute top-0 left-0 w-5 h-5 border-2 rounded flex items-center justify-center transition-all duration-200 ${
-              spiders ? '' : 'border-gray-500 bg-transparent'
+            <div className={`absolute top-0 left-0 w-6 h-6 border-2 rounded-lg flex items-center justify-center transition-all duration-200 ${
+              spiders ? '' : 'border-gray-400 bg-transparent'
             }`} style={{ borderColor: spiders ? accentColor : '', backgroundColor: spiders ? accentColor : 'transparent' }}>
               {spiders && (
                 <svg
-                  width="12"
-                  height="12"
+                  width="14"
+                  height="14"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -179,18 +179,18 @@ function ColorPickerNode({ data }: { data: any }) {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <GiSpiderAlt className="w-4 h-4 text-gray-400" />
-            <span className="text-sm text-gray-400">Enable Spiders</span>
+          <div className="flex items-center gap-3">
+            <GiSpiderAlt className="w-5 h-5 text-gray-300" />
+            <span className="text-sm text-gray-300">Enable Spiders</span>
           </div>
         </label>
       </div>
 
-      <div className="mb-3.75">
-        <div className="text-xs text-gray-400 mb-1.25">
+      <div className="mb-4">
+        <div className="text-sm text-gray-300 mb-2">
           Accent Color
         </div>
-        <div className="mb-2.5">
+        <div className="mb-3">
           <CustomColorPicker
             color={accentColor}
             onChange={onChange}
@@ -204,8 +204,8 @@ function ColorPickerNode({ data }: { data: any }) {
 function TutorialNode({ data }: { data: any }) {
   const accentColor = data.accentColor || '#f97316';
   return (
-    <div className="bg-blue-900 border-2 rounded-lg p-3.75 text-white  min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
-      <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
+    <div className="bg-blue-900 border-2 rounded-xl p-4 text-white min-w-50 max-w-62.5 shadow-lg" style={{ borderColor: accentColor }}>
+      <div className="text-lg font-bold mb-3" style={{ color: accentColor }}>
         📚 Tutorial
       </div>
 
@@ -226,12 +226,13 @@ function NoteNode({ data, id, accentColor = '#f97316' }: { data: any; id: string
   };
 
   return (
-    <div className="bg-yellow-900 border-2 rounded-lg p-3.75 text-white  min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
-      <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
-        📝 Note: {id}
+    <div className="bg-gray-900 border-2 rounded-xl p-4 text-white shadow-lg" style={{ borderColor: accentColor, minWidth: NODE_MIN_WIDTH, maxWidth: NODE_MAX_WIDTH }}>
+      <div className="text-lg font-bold mb-3" style={{ color: accentColor }}>
+        <FontAwesomeIcon icon={faNoteSticky} className="mr-2" />
+        Note: {id}
       </div>
 
-      <div className="text-xs text-yellow-200 mb-2.5 italic">
+      <div className="text-xs text-gray-300 mb-2.5 italic">
         Notes help you organize your adventure design. They don't appear in the final game.
       </div>
 
@@ -250,7 +251,7 @@ function NoteNode({ data, id, accentColor = '#f97316' }: { data: any; id: string
               handleTextChange(text);
             }
           }}
-          className="w-full bg-yellow-800 border border-yellow-600 rounded text-white  text-sm p-2 resize-vertical min-h-20"
+          className="w-full bg-gray-700 border border-gray-500 rounded text-white text-sm p-2 resize-vertical min-h-20"
           placeholder="Write your note here..."
           autoFocus
         />
@@ -266,107 +267,150 @@ function NoteNode({ data, id, accentColor = '#f97316' }: { data: any; id: string
   );
 }
 
-function SceneNode({ data, id, accentColor = '#f97316' }: { data: any; id: string; accentColor?: string }) {
-  const [isEditing, setIsEditing] = useState(false);
+const SceneNode = ({ data, id, accentColor = '#f97316' }: { data: any; id: string; accentColor?: string }) => {
+  const [editing, setEditing] = useState(false);
   const [text, setText] = useState(data.text || 'Enter scene text...');
   const [choices, setChoices] = useState(data.choices || []);
+  const [enemyName, setEnemyName] = useState(data.battle?.enemyName || 'Mighty Warrior');
+  const [enemyHealth, setEnemyHealth] = useState(data.battle?.enemyHealth || 80);
+  const [defendEnabled, setDefendEnabled] = useState(data.battle?.defendEnabled ?? true);
 
-  const handleTextChange = (newText: string) => {
-    setText(newText);
-    data.onChange?.(id, { ...data, text: newText });
-  };
-
-  const addChoice = () => {
-    const newChoices = [...choices, { text: 'New choice', nextScene: '' }];
-    setChoices(newChoices);
-    data.onChange?.(id, { ...data, choices: newChoices });
-  };
-
-  const updateChoice = (index: number, field: string, value: string) => {
-    console.log('updateChoice', index, field, value);
-    const newChoices = [...choices];
-    newChoices[index] = { ...newChoices[index], [field]: value };
-    setChoices(newChoices);
-    data.onChange?.(id, { ...data, choices: newChoices });
-  };
-
-  const deleteChoice = (index: number) => {
-    const newChoices = choices.filter((_: any, i: number) => i !== index);
-    setChoices(newChoices);
-    data.onChange?.(id, { ...data, choices: newChoices });
-  };
+  const updateData = (updates: any) => data.onChange?.(id, { ...data, ...updates });
 
   return (
-    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white  min-w-75 max-w-100" style={{ borderColor: accentColor }}>
-      <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
-        Scene: {id}
-      </div>
+    <div className="bg-gray-900 border-2 rounded-xl p-3 text-white min-w-75 max-w-100 shadow-lg" style={{ borderColor: accentColor }}>
+      <div className="text-xl font-bold mb-4" style={{ color: accentColor }}>Scene: {id}</div>
 
-      {isEditing ? (
+      {!data.battle && (editing ? (
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          onBlur={() => {
-            setIsEditing(false);
-            handleTextChange(text);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              setIsEditing(false);
-              handleTextChange(text);
-            }
-          }}
-          className="w-full bg-gray-800 border border-gray-600 rounded text-white  text-sm p-2 resize-vertical min-h-15"
+          onBlur={() => { setEditing(false); updateData({ text }); }}
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), setEditing(false), updateData({ text }))}
+          className="w-full bg-gray-700 border border-gray-500 rounded-lg text-white text-sm p-3 resize-none min-h-24"
           autoFocus
         />
       ) : (
-        <div
-          onClick={() => setIsEditing(true)}
-          className="cursor-pointer whitespace-pre-wrap leading-relaxed mb-2.5 min-h-10"
-        >
-          {text || 'Click to edit scene text...'}
+        <div onClick={() => setEditing(true)} className="cursor-pointer whitespace-pre-wrap mb-4 min-h-20 p-2 rounded hover:bg-gray-700 transition-colors">
+          {text && text.trim() ? text : 'Click to edit scene text...'}
         </div>
-      )}
+      ))}
 
-      <div className="mb-2.5">
-        <button
-          onClick={addChoice}
-          className="bg-gray-800 text-white border border-gray-600 px-2.5 py-1.25 rounded cursor-pointer text-xs hover:bg-gray-700"
-        >
-          <FontAwesomeIcon icon={faPlusCircle} className="mr-1" /> Add Choice
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        {choices.map((choice: any, index: number) => (
-          <div key={index} className="flex items-center gap-1.25">
-            <input
-              type="text"
-              value={choice.text}
-              onChange={(e) => updateChoice(index, 'text', e.target.value)}
-              placeholder="Choice text"
-              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white  text-xs px-2 py-1"
-            />
-            <input
-              type="text"
-              value={choice.nextScene}
-              onChange={(e) => updateChoice(index, 'nextScene', e.target.value)}
-              placeholder="Target scene"
-              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white  text-xs px-2 py-1"
-            />
-            <button
-              onClick={() => deleteChoice(index)}
-              className="bg-red-500 text-white border-none px-2 py-1 rounded cursor-pointer text-xs"
-            >
-              ×
-            </button>
+      {data.battle ? (
+        <div className="mb-4">
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">Enemy Name</label>
+              <input
+                type="text"
+                value={enemyName}
+                onChange={(e) => {
+                  setEnemyName(e.target.value);
+                  updateData({
+                    battle: {
+                      ...data.battle,
+                      enemyName: e.target.value
+                    }
+                  });
+                }}
+                placeholder="Enter enemy name..."
+                className="w-full bg-gray-700 border border-gray-500 rounded-lg text-white text-sm px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">Enemy Health</label>
+              <input
+                type="number"
+                value={enemyHealth}
+                onChange={(e) => {
+                  const health = parseInt(e.target.value) || 0;
+                  setEnemyHealth(health);
+                  updateData({
+                    battle: {
+                      ...data.battle,
+                      enemyHealth: health
+                    }
+                  });
+                }}
+                placeholder="Enter enemy health..."
+                min="1"
+                className="w-full bg-gray-700 border border-gray-500 rounded-lg text-white text-sm px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-300 mb-2">
+                Enable Defend Option
+              </label>
+              <label
+                onMouseEnter={() => {}}
+                onMouseLeave={() => {}}
+                className="flex items-center gap-4 cursor-pointer p-3 rounded-lg border transition-all duration-200 bg-gray-700 border-gray-500"
+              >
+                <div className="relative w-6 h-6">
+                  <input
+                    type="checkbox"
+                    checked={defendEnabled}
+                    onChange={(e) => {
+                      setDefendEnabled(e.target.checked);
+                      updateData({
+                        battle: {
+                          ...data.battle,
+                          defendEnabled: e.target.checked
+                        }
+                      });
+                    }}
+                    className="absolute opacity-0 w-full h-full m-0 cursor-pointer"
+                  />
+                  <div className={`absolute top-0 left-0 w-6 h-6 border-2 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                    defendEnabled ? '' : 'border-gray-400 bg-transparent'
+                  }`} style={{ borderColor: defendEnabled ? accentColor : '', backgroundColor: defendEnabled ? accentColor : 'transparent' }}>
+                    {defendEnabled && (
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="animate-checkmark-pop"
+                        style={{
+                          animation: 'checkmarkPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+                        }}
+                      >
+                        <path d="M20 6L9 17L4 12" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-300">Enable Defend</span>
+                </div>
+              </label>
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <>
+          <button
+            onClick={() => { const newChoices = [...choices, { text: 'New choice', nextScene: '' }]; setChoices(newChoices); updateData({ choices: newChoices }); }}
+            className="bg-gray-800 text-white border border-gray-600 px-3 py-2 rounded cursor-pointer text-sm hover:bg-gray-700 mb-3"
+          >
+            <svg className="w-4 h-4 mr-2 inline" viewBox="0 0 512 512" fill="currentColor"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"></path></svg>Add Choice
+          </button>
+
+          <div className="space-y-3">
+            {choices.map((choice: any, i: number) => (
+              <div key={i} className="flex gap-3 items-center">
+                <input value={choice.text} onChange={(e) => { const newChoices = [...choices]; newChoices[i].text = e.target.value; setChoices(newChoices); updateData({ choices: newChoices }); }} placeholder="Choice text" className="flex-1 bg-gray-700 border border-gray-500 rounded-lg text-white text-xs p-3" />
+                <input value={choice.nextScene} onChange={(e) => { const newChoices = [...choices]; newChoices[i].nextScene = e.target.value; setChoices(newChoices); updateData({ choices: newChoices }); }} placeholder="Target scene" className="flex-1 bg-gray-700 border border-gray-500 rounded-lg text-white text-xs p-3" />
+                <button onClick={() => { const newChoices = choices.filter((_: any, j: number) => j !== i); setChoices(newChoices); updateData({ choices: newChoices }); }} className="bg-red-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-500 transition-colors">×</button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
-}
+};
 
 const nodeTypes: NodeTypes = {
   sceneNode: SceneNode,
@@ -426,16 +470,12 @@ export default function CodeEditor() {
       type: 'sceneNode',
       position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
       data: {
-        text: '⚡ A fierce battle begins! ⚡\n\nYou encounter a powerful enemy. What do you do?',
-        choices: [
-          { text: '⚔️ Attack with all your might!', nextScene: '' },
-          { text: '🛡️ Defend and wait for an opening', nextScene: '' },
-          { text: '🏃‍♂️ Try to flee from the battle', nextScene: '' }
-        ],
+        text: '',
         battle: {
           enabled: true,
           enemyName: 'Mighty Warrior',
-          enemyHealth: 80
+          enemyHealth: 80,
+          defendEnabled: true
         }
       },
     }));
@@ -1027,6 +1067,16 @@ export default function CodeEditor() {
           <div className="mt-3 flex justify-center">
             <button className="text-white border-2 border-gray-600 px-4 py-2 rounded cursor-not-allowed font-bold bg-black opacity-60 text-sm">
               Test Game
+            </button>
+          </div>
+          <h3 className="text-white text-lg font-bold mt-8 mb-4">Notes</h3>
+          <p className="text-gray-300 text-sm leading-relaxed">
+            Create Notes using the notes button from the add dropdown. These do not affect your story.
+          </p>
+          <div className="mt-3 flex justify-center">
+            <button className="bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded cursor-not-allowed font-bold opacity-60 text-sm">
+              <FontAwesomeIcon icon={faNoteSticky} className="mr-2" />
+              Note
             </button>
           </div>
         </div>

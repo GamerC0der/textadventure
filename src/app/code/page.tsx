@@ -15,7 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpider, faPlus, faFileCode, faArrowLeft, faPlusCircle, faNoteSticky } from '@fortawesome/free-solid-svg-icons';
+import { faSpider, faPlus, faFileCode, faArrowLeft, faPlusCircle, faNoteSticky, faBook } from '@fortawesome/free-solid-svg-icons';
 import { GiSpiderAlt } from 'react-icons/gi';
 
 const NODE_MIN_WIDTH = 200;
@@ -1079,6 +1079,18 @@ export default function CodeEditor() {
               Note
             </button>
           </div>
+        </div>
+        <div className="p-4 border-t border-gray-700">
+          <h3 className="text-white text-lg font-bold mb-4">Still Stuck?</h3>
+          <a
+            href="https://raw.githubusercontent.com/GamerC0der/textadventure/refs/heads/main/tutorial.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-gray-800 text-white border border-gray-600 px-4 py-2 rounded cursor-pointer text-sm hover:bg-gray-700 transition-colors"
+          >
+            <FontAwesomeIcon icon={faBook} className="h-4 w-4" />
+            View ReadME.MD
+          </a>
         </div>
       </div>
       <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">

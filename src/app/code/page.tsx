@@ -343,6 +343,8 @@ export default function CodeEditor() {
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [addDropdownOpen, setAddDropdownOpen] = useState(false);
 
+  const hasThemeSettingsNode = nodes.some(node => node.type === 'colorPickerNode');
+
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
   const addNode = () => {
@@ -386,6 +388,17 @@ export default function CodeEditor() {
       type: 'noteNode',
       position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
       data: { text: '' },
+    }));
+    setNodeIdCounter(prev => prev + 1);
+  };
+
+  const addThemeSettingsNode = () => {
+    const id = `theme${nodeIdCounter}`;
+    setNodes((nds) => nds.concat({
+      id,
+      type: 'colorPickerNode',
+      position: { x: Math.random() * 400 + 100, y: Math.random() * 400 + 100 },
+      data: { title: tabTitle, spiders: spiders },
     }));
     setNodeIdCounter(prev => prev + 1);
   };
@@ -908,6 +921,14 @@ export default function CodeEditor() {
           >
             📝 Add Note
           </button>
+          {!hasThemeSettingsNode && (
+            <button
+              onClick={() => { addThemeSettingsNode(); setContextMenu(null); }}
+              className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+            >
+              Add Themes
+            </button>
+          )}
           <button
             onClick={() => { startPlay(); setContextMenu(null); }}
             className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
@@ -981,6 +1002,18 @@ export default function CodeEditor() {
               >
                 Note
               </button>
+              {!hasThemeSettingsNode && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addThemeSettingsNode();
+                    setAddDropdownOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+                >
+                  Themes
+                </button>
+              )}
             </div>
           )}
         </div>

@@ -733,7 +733,8 @@ export default function CodeEditor() {
                 spider.className = 'spider';
                 spider.innerHTML = '🕷️';
                 spider.style.fontSize = this.zoom + 'px';
-                spider.style.left = Math.random() * (window.innerWidth - this.zoom) + 'px';
+                const leftOffset = window.innerWidth * 0.25; // Left sidebar takes 25% width
+                spider.style.left = Math.random() * (window.innerWidth - leftOffset - this.zoom) + leftOffset + 'px';
                 spider.style.top = Math.random() * (window.innerHeight - this.zoom) + 'px';
                 spider.dataset.vx = (Math.random() - 0.5) * 2;
                 spider.dataset.vy = (Math.random() - 0.5) * 2;
@@ -750,7 +751,8 @@ export default function CodeEditor() {
                         let vy = parseFloat(spider.dataset.vy);
                         x += vx;
                         y += vy;
-                        if (x <= 0 || x >= window.innerWidth - this.zoom) {
+                        const leftOffset = window.innerWidth * 0.25; // Left sidebar takes 25% width
+                        if (x <= leftOffset || x >= window.innerWidth - this.zoom) {
                             vx = -vx;
                             spider.dataset.vx = vx;
                         }

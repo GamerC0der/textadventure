@@ -1021,6 +1021,14 @@ export default function CodeEditor() {
               />
             </div>
           </div>
+          <p className="text-gray-300 text-sm leading-relaxed mt-6">
+            To test your game, press the "Test Game" button in the top right corner. Your game will open in a new tab where you can play through your adventure.
+          </p>
+          <div className="mt-3 flex justify-center">
+            <button className="text-white border-2 border-gray-600 px-4 py-2 rounded cursor-not-allowed font-bold bg-black opacity-60 text-sm">
+              Test Game
+            </button>
+          </div>
         </div>
       </div>
       <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">

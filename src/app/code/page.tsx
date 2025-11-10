@@ -402,7 +402,6 @@ export default function CodeEditor() {
   const [accentColor, setAccentColor] = useState('#f97316');
   const [tabTitle, setTabTitle] = useState('My Adventure');
   const [spiders, setSpiders] = useState(false);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [addDropdownOpen, setAddDropdownOpen] = useState(false);
 
   const hasThemeSettingsNode = nodes.some(node => node.type === 'colorPickerNode');
@@ -483,13 +482,7 @@ export default function CodeEditor() {
     window.open(`/play?data=${data}&color=${color}&title=${title}&spiders=${spiderParam}`, '_blank');
   };
 
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setContextMenu({ x: e.clientX, y: e.clientY });
-  };
-
   const handleClick = () => {
-    setContextMenu(null);
     setAddDropdownOpen(false);
   };
 
@@ -497,7 +490,6 @@ export default function CodeEditor() {
     setNodes([initialNodes[1]]);
     setEdges([]);
     setNodeIdCounter(1);
-    setContextMenu(null);
   };
 
   const downloadAdventure = () => {
@@ -945,7 +937,7 @@ export default function CodeEditor() {
   }), [setNodes, accentColor, tabTitle, spiders]);
 
   return (
-    <div className="h-screen bg-black flex" onContextMenu={handleContextMenu} onClick={handleClick}>
+    <div className="h-screen bg-black flex" onClick={handleClick}>
       <div className="w-1/4 bg-gray-900 border-r border-gray-700 flex flex-col">
         <div className="p-4">
           <button
@@ -963,63 +955,6 @@ export default function CodeEditor() {
           </p>
         </div>
       </div>
-      {contextMenu && (
-        <div
-          className="absolute z-50 bg-gray-800 border rounded shadow-lg py-1"
-          style={{
-            left: contextMenu.x,
-            top: contextMenu.y,
-            borderColor: accentColor,
-            minWidth: '150px'
-          }}
-        >
-          <button
-            onClick={() => { addNode(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
-          >
-            + Add Scene
-          </button>
-          <button
-            onClick={() => { addBattleNode(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
-          >
-            ⚔️ Add Battle
-          </button>
-          <button
-            onClick={() => { addNoteNode(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
-          >
-            📝 Add Note
-          </button>
-          {!hasThemeSettingsNode && (
-            <button
-              onClick={() => { addThemeSettingsNode(); setContextMenu(null); }}
-              className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
-            >
-              Add Themes
-            </button>
-          )}
-          <button
-            onClick={() => { startPlay(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
-          >
-            ▶ Play Adventure
-          </button>
-          <button
-            onClick={() => { downloadAdventure(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
-          >
-            ⬇ Download HTML
-          </button>
-          <div className="border-t border-gray-600 my-1"></div>
-          <button
-            onClick={clearAll}
-            className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700  text-sm"
-          >
-            🗑 Clear All
-          </button>
-        </div>
-      )}
       <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">
         <div className="relative">
           <button
@@ -1070,7 +1005,7 @@ export default function CodeEditor() {
                     addThemeSettingsNode();
                     setAddDropdownOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
+                  className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 text-sm"
                 >
                   Themes
                 </button>

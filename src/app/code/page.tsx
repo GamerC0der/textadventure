@@ -22,6 +22,108 @@ const NODE_MIN_WIDTH = 200;
 const NODE_MAX_WIDTH = 250;
 const INPUT_HEIGHT = 40;
 
+// Custom Color Picker Component
+function CustomColorPicker({ color, onChange }: { color: string; onChange: (color: string) => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Convert hex to RGB
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 0, g: 0, b: 0 };
+  };
+
+  // Convert RGB to hex
+  const rgbToHex = (r: number, g: number, b: number) => {
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  };
+
+  // Generate hue colors for the picker
+  const getHueColors = () => {
+    const colors = [];
+    for (let i = 0; i <= 360; i += 10) {
+      colors.push(`hsl(${i}, 100%, 50%)`);
+    }
+    return colors;
+  };
+
+  const selectHue = (hueIndex: number) => {
+    const hue = hueIndex * 10;
+    const rgb = hexToRgb(color);
+    // Convert RGB to HSL, change hue, convert back
+    const r = rgb.r / 255;
+    const g = rgb.g / 255;
+    const b = rgb.b / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0;
+    const s = max === 0 ? 0 : (max - min) / max;
+    const l = (max + min) / 2;
+
+    // Set new hue, keep saturation and lightness
+    const newRgb = hslToRgb(hue / 360, s, l);
+    onChange(rgbToHex(Math.round(newRgb.r * 255), Math.round(newRgb.g * 255), Math.round(newRgb.b * 255)));
+  };
+
+  const hslToRgb = (h: number, s: number, l: number) => {
+    let r, g, b;
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const hue2rgb = (p: number, q: number, t: number) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+    return { r, g, b };
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-8 h-8 rounded border-2 cursor-pointer"
+        style={{ backgroundColor: color, borderColor: color }}
+        title="Click to change color"
+      />
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 p-2 bg-gray-800 border border-gray-600 rounded shadow-lg z-50">
+          <div className="grid grid-cols-6 gap-1 mb-2">
+            {getHueColors().map((hueColor, index) => (
+              <button
+                key={index}
+                onClick={() => selectHue(index)}
+                className="w-6 h-6 rounded border border-gray-500 hover:border-white transition-colors"
+                style={{ backgroundColor: hueColor }}
+                title={`Hue ${index * 10}°`}
+              />
+            ))}
+          </div>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="w-full text-xs text-gray-400 hover:text-white py-1 border-t border-gray-600"
+          >
+            Close
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ColorPickerNode({ data }: { data: any }) {
   const { accentColor, title, spiders, onChange, onTitleChange, onSpidersChange } = data;
   const [isHovered, setIsHovered] = useState(false);
@@ -84,45 +186,11 @@ function ColorPickerNode({ data }: { data: any }) {
         <div className="text-xs text-gray-400 mb-1.25">
           Accent Color
         </div>
-        <div className="flex items-center gap-2.5 mb-2.5">
-          <input
-            type="color"
-            value={accentColor}
-            onChange={(e) => onChange?.(e.target.value)}
-            className="w-12 h-10 border-2 border-gray-600 rounded cursor-pointer bg-gray-800 outline-none"
-            style={{ borderColor: accentColor }}
+        <div className="mb-2.5">
+          <CustomColorPicker
+            color={accentColor}
+            onChange={onChange}
           />
-          <input
-            type="text"
-            value={accentColor}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (/^#[0-9A-F]{6}$/i.test(value)) {
-                onChange?.(value);
-              }
-            }}
-          placeholder="#61dafb"
-            className="flex-1 bg-gray-800 border border-gray-600 rounded text-white  text-xs px-2 py-1.5"
-          />
-        </div>
-        <div className="grid grid-cols-8 gap-1">
-          {[
-            '#61dafb', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
-            '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce',
-            '#85c1e9', '#f8c471', '#82e0aa', '#f1948a'
-          ].map((color) => (
-            <button
-              key={color}
-              onClick={() => onChange?.(color)}
-              className={`w-6 h-6 rounded border-2 transition-all duration-200 ${
-                accentColor === color
-                  ? 'border-white scale-110 shadow-lg'
-                  : 'border-gray-600 hover:border-gray-400'
-              }`}
-              style={{ backgroundColor: color }}
-              title={color}
-            />
-          ))}
         </div>
       </div>
     </div>
@@ -130,7 +198,7 @@ function ColorPickerNode({ data }: { data: any }) {
 }
 
 function TutorialNode({ data }: { data: any }) {
-  const accentColor = data.accentColor || '#61dafb';
+  const accentColor = data.accentColor || '#f97316';
   return (
     <div className="bg-blue-900 border-2 rounded-lg p-3.75 text-white  min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
       <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
@@ -144,7 +212,7 @@ function TutorialNode({ data }: { data: any }) {
   );
 }
 
-function NoteNode({ data, id, accentColor = '#61dafb' }: { data: any; id: string; accentColor?: string }) {
+function NoteNode({ data, id, accentColor = '#f97316' }: { data: any; id: string; accentColor?: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(data.text || '');
 
@@ -194,7 +262,7 @@ function NoteNode({ data, id, accentColor = '#61dafb' }: { data: any; id: string
   );
 }
 
-function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: string; accentColor?: string }) {
+function SceneNode({ data, id, accentColor = '#f97316' }: { data: any; id: string; accentColor?: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const [text, setText] = useState(data.text || 'Enter scene text...');
   const [choices, setChoices] = useState(data.choices || []);
@@ -309,11 +377,8 @@ const initialNodes: Node[] = [
     type: 'sceneNode',
     position: { x: 250, y: 25 },
     data: {
-      text: 'Welcome to your adventure!\n\nWhat do you want to do?',
-      choices: [
-        { text: 'Explore the forest', nextScene: 'forest' },
-        { text: 'Enter the cave', nextScene: 'cave' }
-      ]
+      text: 'Welcome to your adventure! Click to change your text...',
+      choices: []
     },
   },
   {
@@ -338,7 +403,7 @@ export default function CodeEditor() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [nodeIdCounter, setNodeIdCounter] = useState(1);
-  const [accentColor, setAccentColor] = useState('#61dafb');
+  const [accentColor, setAccentColor] = useState('#f97316');
   const [tabTitle, setTabTitle] = useState('My Adventure');
   const [spiders, setSpiders] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);

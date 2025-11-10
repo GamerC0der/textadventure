@@ -1302,7 +1302,7 @@ export default function CodeEditor() {
             Back
           </button>
         </div>
-        <div className="p-4 flex-1">
+        <div className="p-4 flex-1 overflow-y-auto">
           <h2 className="text-white text-xl font-bold mb-4">Tutorial</h2>
           <p className="text-gray-300 text-sm leading-relaxed">
             To add a choice, press the Add Choice button.

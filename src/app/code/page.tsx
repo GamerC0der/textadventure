@@ -169,7 +169,17 @@ function ColorPickerNode({ data }: { data: any }) {
               spiders ? '' : 'border-gray-500 bg-transparent'
             }`} style={{ borderColor: spiders ? accentColor : '', backgroundColor: spiders ? accentColor : 'transparent' }}>
               {spiders && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="animate-checkmark-pop"
+                  style={{
+                    animation: 'checkmarkPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+                  }}
+                >
                   <path d="M20 6L9 17L4 12" stroke="black" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               )}

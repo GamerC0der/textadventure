@@ -22,11 +22,9 @@ const NODE_MIN_WIDTH = 200;
 const NODE_MAX_WIDTH = 250;
 const INPUT_HEIGHT = 40;
 
-// Custom Color Picker Component
 function CustomColorPicker({ color, onChange }: { color: string; onChange: (color: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Convert hex to RGB
   const hexToRgb = (hex: string) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -36,12 +34,10 @@ function CustomColorPicker({ color, onChange }: { color: string; onChange: (colo
     } : { r: 0, g: 0, b: 0 };
   };
 
-  // Convert RGB to hex
   const rgbToHex = (r: number, g: number, b: number) => {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   };
 
-  // Generate hue colors for the picker
   const getHueColors = () => {
     const colors = [];
     for (let i = 0; i <= 360; i += 10) {
@@ -53,7 +49,6 @@ function CustomColorPicker({ color, onChange }: { color: string; onChange: (colo
   const selectHue = (hueIndex: number) => {
     const hue = hueIndex * 10;
     const rgb = hexToRgb(color);
-    // Convert RGB to HSL, change hue, convert back
     const r = rgb.r / 255;
     const g = rgb.g / 255;
     const b = rgb.b / 255;
@@ -64,7 +59,6 @@ function CustomColorPicker({ color, onChange }: { color: string; onChange: (colo
     const s = max === 0 ? 0 : (max - min) / max;
     const l = (max + min) / 2;
 
-    // Set new hue, keep saturation and lightness
     const newRgb = hslToRgb(hue / 360, s, l);
     onChange(rgbToHex(Math.round(newRgb.r * 255), Math.round(newRgb.g * 255), Math.round(newRgb.b * 255)));
   };
@@ -377,7 +371,6 @@ function SceneNode({ data, id, accentColor = '#f97316' }: { data: any; id: strin
 const nodeTypes: NodeTypes = {
   sceneNode: SceneNode,
   colorPickerNode: ColorPickerNode,
-  tutorialNode: TutorialNode,
   noteNode: NoteNode,
 };
 
@@ -396,13 +389,6 @@ const initialNodes: Node[] = [
     type: 'colorPickerNode',
     position: { x: -18, y: 25 },
     data: { title: 'My Adventure', spiders: false },
-  },
-  {
-    id: 'tutorial',
-    type: 'tutorialNode',
-    position: { x: -18, y: 442 },
-    data: {},
-    draggable: false,
   },
 ];
 
@@ -953,15 +939,6 @@ export default function CodeEditor() {
           onSpidersChange: (newSpiders: boolean) => {
             setSpiders(newSpiders);
           }
-        }}
-      />
-    ),
-    tutorialNode: (props: any) => (
-      <TutorialNode
-        {...props}
-        data={{
-          ...props.data,
-          accentColor,
         }}
       />
     ),

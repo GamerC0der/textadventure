@@ -441,6 +441,22 @@ const SceneNode = ({ data, id, accentColor = '#f97316' }: { data: any; id: strin
   );
 };
 
+function SearchHandler({ targetNodeId, nodes, onTargetHandled }: { targetNodeId: string | null; nodes: any[]; onTargetHandled: () => void }) {
+  const { fitView } = useReactFlow();
+
+  useEffect(() => {
+    if (targetNodeId) {
+      const node = nodes.find(n => n.id === targetNodeId);
+      if (node) {
+        fitView({ nodes: [node], duration: 300 });
+        onTargetHandled();
+      }
+    }
+  }, [targetNodeId, nodes, fitView, onTargetHandled]);
+
+  return null;
+}
+
 function CustomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
   return (
@@ -493,10 +509,36 @@ export default function CodeEditor() {
   const [tabTitle, setTabTitle] = useState('My Adventure');
   const [spiders, setSpiders] = useState(false);
   const [addDropdownOpen, setAddDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
 
   const hasThemeSettingsNode = nodes.some(node => node.type === 'colorPickerNode');
 
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const filtered = nodes.filter(node =>
+        node.id.toLowerCase().includes(searchQuery.toLowerCase())
+      ).map(node => node.id);
+      setSearchSuggestions(filtered);
+    } else {
+      setSearchSuggestions([]);
+    }
+  }, [searchQuery, nodes]);
+
+  const [targetNodeId, setTargetNodeId] = useState<string | null>(null);
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      const node = nodes.find(n => n.id.toLowerCase() === searchQuery.toLowerCase());
+      if (node) {
+        setTargetNodeId(node.id);
+        setSearchQuery('');
+        setSearchSuggestions([]);
+      }
+    }
+  };
 
   const addNode = () => {
     const id = `scene${nodeIdCounter}`;
@@ -1405,6 +1447,35 @@ export default function CodeEditor() {
           </a>
         </div>
       </div>
+      <div className="absolute top-2.5 left-[20%] ml-4 z-10">
+        <div className="relative">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            placeholder="Search nodes..."
+            className="bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:border-gray-500"
+          />
+          {searchSuggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-40 overflow-y-auto z-20">
+              {searchSuggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  className="px-3 py-2 text-white hover:bg-gray-700 cursor-pointer text-sm"
+                  onClick={() => {
+                    setTargetNodeId(suggestion);
+                    setSearchQuery('');
+                    setSearchSuggestions([]);
+                  }}
+                >
+                  {suggestion}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">
         <div className="relative">
           <button
@@ -1488,6 +1559,7 @@ Test Game
         className="bg-black"
       >
         <Background color="#333" gap={16} />
+        <SearchHandler targetNodeId={targetNodeId} nodes={nodes} onTargetHandled={() => setTargetNodeId(null)} />
         <CustomControls />
       </ReactFlow>
 

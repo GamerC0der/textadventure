@@ -15,7 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpider, faPlus, faFileCode, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faSpider, faPlus, faFileCode, faArrowLeft, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { GiSpiderAlt } from 'react-icons/gi';
 
 const NODE_MIN_WIDTH = 200;
@@ -328,9 +328,9 @@ function SceneNode({ data, id, accentColor = '#f97316' }: { data: any; id: strin
       <div className="mb-2.5">
         <button
           onClick={addChoice}
-          className="bg-green-500 text-white border-none px-2.5 py-1.25 rounded cursor-pointer text-xs "
+          className="bg-gray-800 text-white border border-gray-600 px-2.5 py-1.25 rounded cursor-pointer text-xs hover:bg-gray-700"
         >
-          <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add Choice
+          <FontAwesomeIcon icon={faPlusCircle} className="mr-1" /> Add Choice
         </button>
       </div>
 

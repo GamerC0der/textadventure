@@ -27,6 +27,7 @@ type Scene = {
     enabled: boolean;
     enemyName: string;
     enemyHealth: number;
+    defendEnabled?: boolean;
   };
 };
 
@@ -286,7 +287,7 @@ function GameScreen({
       <main className="min-h-screen bg-black text-white font-mono flex flex-col justify-center items-center p-10 relative">
         <div className="max-w-4xl w-full">
           <div className="text-3xl leading-relaxed mb-7.5 text-center text-purple-400">
-            <FontAwesomeIcon icon={faBolt} className="mr-2" /> BATTLE: {battle.enemyName.toUpperCase()} <FontAwesomeIcon icon={faBolt} className="ml-2" />
+            BATTLE: {battle.enemyName.toUpperCase()}
           </div>
 
           <div className="flex justify-between mb-7.5">
@@ -327,23 +328,35 @@ function GameScreen({
               disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
               className={`text-xl px-7.5 py-3.75 rounded-lg font-bold ${
                 battle.turn === 'player' && battle.enemyHealth > 0
-                  ? 'bg-purple-500 text-white cursor-pointer hover:bg-purple-600'
+                  ? 'text-white cursor-pointer'
                   : 'bg-gray-600 text-white cursor-not-allowed'
               }`}
+              style={{
+                backgroundColor: battle.turn === 'player' && battle.enemyHealth > 0 ? accentColor : undefined,
+                border: `2px solid ${accentColor}`,
+                color: battle.turn === 'player' && battle.enemyHealth > 0 ? 'black' : undefined
+              }}
             >
-              <FontAwesomeIcon icon={faBolt} className="mr-2" /> ATTACK <FontAwesomeIcon icon={faBolt} className="ml-2" />
+              ATTACK
             </button>
-            <button
-              onClick={onPlayerDefend}
-              disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
-              className={`text-xl px-7.5 py-3.75 rounded-lg font-bold ${
-                battle.turn === 'player' && battle.enemyHealth > 0
-                  ? 'bg-cyan-500 text-white cursor-pointer hover:bg-cyan-600'
-                  : 'bg-gray-600 text-white cursor-not-allowed'
-              }`}
-            >
-              🛡️ DEFEND 🛡️
-            </button>
+            {currentSceneData?.battle?.defendEnabled !== false && (
+              <button
+                onClick={onPlayerDefend}
+                disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
+                className={`text-xl px-7.5 py-3.75 rounded-lg font-bold ${
+                  battle.turn === 'player' && battle.enemyHealth > 0
+                    ? 'text-white cursor-pointer'
+                    : 'bg-gray-600 text-white cursor-not-allowed'
+                }`}
+                style={{
+                  backgroundColor: battle.turn === 'player' && battle.enemyHealth > 0 ? accentColor : undefined,
+                  border: `2px solid ${accentColor}`,
+                  color: battle.turn === 'player' && battle.enemyHealth > 0 ? 'black' : undefined
+                }}
+              >
+                DEFEND
+              </button>
+            )}
           </div>
         </div>
       </main>

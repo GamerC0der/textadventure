@@ -259,7 +259,7 @@ function Home() {
                 disabled={battle.turn !== 'player' || battle.enemyHealth <= 0}
                 className={`text-xl px-7.5 py-3.75 rounded-lg font-bold ${
                   battle.turn === 'player' && battle.enemyHealth > 0
-                    ? 'bg-blue-500 text-white cursor-pointer hover:bg-blue-600'
+                    ? 'bg-orange-500 text-white cursor-pointer hover:bg-orange-600'
                     : 'bg-gray-600 text-white cursor-not-allowed'
                 }`}
               >
@@ -289,7 +289,7 @@ function Home() {
                 <button
                   key={index}
                   onClick={() => handleChoice(choice.nextScene)}
-                  className="text-lg text-white bg-transparent border-2 border-blue-400 px-6 py-3 rounded-full cursor-pointer font-bold uppercase tracking-wide min-w-50 hover:bg-blue-400 hover:text-black transition-colors duration-300"
+                  className="text-lg text-white bg-transparent border-2 border-orange-400 px-6 py-3 rounded-full cursor-pointer font-bold uppercase tracking-wide min-w-50 hover:bg-orange-400 hover:text-black transition-colors duration-300"
                 >
                   {choice.text}
                 </button>
@@ -300,7 +300,7 @@ function Home() {
         </div>
 
         <Link href="/code">
-          <button className="absolute bottom-5 left-5 text-2xl text-white bg-transparent border-2 border-blue-400 px-10 py-5 rounded-full cursor-pointer font-bold uppercase tracking-wide font-mono hover:bg-blue-400 hover:text-black transition-colors duration-300">
+          <button className="absolute bottom-5 left-5 text-2xl text-white bg-transparent border-2 border-orange-400 px-10 py-5 rounded-full cursor-pointer font-bold uppercase tracking-wide font-mono hover:bg-orange-400 hover:text-black transition-colors duration-300">
             Make Your Own
           </button>
         </Link>

@@ -16,6 +16,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpider, faPlus, faFileCode, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { GiSpiderAlt } from 'react-icons/gi';
 
 const NODE_MIN_WIDTH = 200;
 const NODE_MAX_WIDTH = 250;
@@ -73,7 +74,7 @@ function ColorPickerNode({ data }: { data: any }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <FontAwesomeIcon icon={faSpider} className="text-base text-gray-400" />
+            <GiSpiderAlt className="w-4 h-4 text-gray-400" />
             <span className="text-sm text-gray-400">Enable Spiders</span>
           </div>
         </label>

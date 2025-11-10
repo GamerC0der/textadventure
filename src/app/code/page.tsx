@@ -15,7 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpider, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSpider, faPlus, faFileCode } from '@fortawesome/free-solid-svg-icons';
 
 const NODE_MIN_WIDTH = 200;
 const NODE_MAX_WIDTH = 250;
@@ -986,15 +986,15 @@ export default function CodeEditor() {
         </div>
         <button
           onClick={startPlay}
-          className="bg-green-500 text-white border-none px-4 py-2 rounded cursor-pointer font-bold font-mono"
+          className="text-white border-2 border-gray-600 px-4 py-2 rounded cursor-pointer font-bold font-mono"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2 inline"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>Play Adventure
+Test Game
         </button>
         <button
           onClick={downloadAdventure}
-          className="bg-blue-500 text-white border-none px-4 py-2 rounded cursor-pointer font-bold font-mono"
+          className="text-white border-2 border-gray-600 px-4 py-2 rounded cursor-pointer font-bold font-mono"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2 inline"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/></svg>Download HTML
+          <FontAwesomeIcon icon={faFileCode} className="mr-2" />Download HTML
         </button>
       </div>
 

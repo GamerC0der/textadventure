@@ -407,18 +407,31 @@ const SceneNode = ({ data, id, accentColor = '#f97316' }: { data: any; id: strin
       ) : (
         <>
           <button
-            onClick={() => { const newChoices = [...choices, { text: 'New choice', nextScene: '' }]; setChoices(newChoices); updateData({ choices: newChoices }); }}
-            className="bg-gray-800 text-white border border-gray-600 px-3 py-2 rounded cursor-pointer text-sm hover:bg-gray-700 mb-3"
+            onClick={() => { if (choices.length < 3) { const newChoices = [...choices, { text: 'New choice', nextScene: '' }]; setChoices(newChoices); updateData({ choices: newChoices }); } }}
+            className={`px-3 py-2 rounded cursor-pointer text-sm mb-3 ${choices.length >= 3 ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-800 text-white border border-gray-600 hover:bg-gray-700'}`}
+            disabled={choices.length >= 3}
           >
-            <svg className="w-4 h-4 mr-2 inline" viewBox="0 0 512 512" fill="currentColor"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"></path></svg>Add Choice
+            <svg className="w-4 h-4 mr-2 inline" viewBox="0 0 512 512" fill="currentColor"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"></path></svg>Add Choice {choices.length >= 3 ? '(Max 3)' : ''}
           </button>
 
           <div className="space-y-3">
             {choices.map((choice: any, i: number) => (
-              <div key={i} className="flex gap-3 items-center">
-                <input value={choice.text} onChange={(e) => { const newChoices = [...choices]; newChoices[i].text = e.target.value; setChoices(newChoices); updateData({ choices: newChoices }); }} placeholder="Choice text" className="flex-1 bg-gray-700 border border-gray-500 rounded-lg text-white text-xs p-3" />
+              <div key={i} className="flex gap-3 items-start">
+                <textarea
+                  value={choice.text}
+                  onChange={(e) => { const newChoices = [...choices]; newChoices[i].text = e.target.value; setChoices(newChoices); updateData({ choices: newChoices }); }}
+                  placeholder="Choice text"
+                  className="flex-1 bg-gray-700 border border-gray-500 rounded-lg text-white text-xs p-3 resize-none"
+                  rows={1}
+                  style={{ minHeight: '40px', maxHeight: '120px' }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = 'auto';
+                    target.style.height = Math.min(target.scrollHeight, 120) + 'px';
+                  }}
+                />
                 <input value={choice.nextScene} onChange={(e) => { const newChoices = [...choices]; newChoices[i].nextScene = e.target.value; setChoices(newChoices); updateData({ choices: newChoices }); }} placeholder="Target scene" className="flex-1 bg-gray-700 border border-gray-500 rounded-lg text-white text-xs p-3" />
-                <button onClick={() => { const newChoices = choices.filter((_: any, j: number) => j !== i); setChoices(newChoices); updateData({ choices: newChoices }); }} className="bg-red-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-500 transition-colors">×</button>
+                <button onClick={() => { const newChoices = choices.filter((_: any, j: number) => j !== i); setChoices(newChoices); updateData({ choices: newChoices }); }} className="bg-red-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-500 transition-colors mt-0.5">×</button>
               </div>
             ))}
           </div>

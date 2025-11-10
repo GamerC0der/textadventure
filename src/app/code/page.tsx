@@ -26,7 +26,7 @@ function ColorPickerNode({ data }: { data: any }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white font-mono" style={{ borderColor: accentColor, minWidth: NODE_MIN_WIDTH, maxWidth: NODE_MAX_WIDTH }}>
+    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white " style={{ borderColor: accentColor, minWidth: NODE_MIN_WIDTH, maxWidth: NODE_MAX_WIDTH }}>
       <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
         Theme Settings
       </div>
@@ -40,7 +40,7 @@ function ColorPickerNode({ data }: { data: any }) {
           value={title || 'My Adventure'}
           onChange={(e) => onTitleChange?.(e.target.value)}
           placeholder="Enter tab title..."
-          className="w-full bg-gray-800 border border-gray-600 rounded text-white font-mono text-xs px-2 py-1.5 box-border"
+          className="w-full bg-gray-800 border border-gray-600 rounded text-white  text-xs px-2 py-1.5 box-border"
         />
       </div>
 
@@ -101,7 +101,7 @@ function ColorPickerNode({ data }: { data: any }) {
               }
             }}
           placeholder="#61dafb"
-            className="flex-1 bg-gray-800 border border-gray-600 rounded text-white font-mono text-xs px-2 py-1.5"
+            className="flex-1 bg-gray-800 border border-gray-600 rounded text-white  text-xs px-2 py-1.5"
           />
         </div>
         <div className="grid grid-cols-8 gap-1">
@@ -131,7 +131,7 @@ function ColorPickerNode({ data }: { data: any }) {
 function TutorialNode({ data }: { data: any }) {
   const accentColor = data.accentColor || '#61dafb';
   return (
-    <div className="bg-blue-900 border-2 rounded-lg p-3.75 text-white font-mono min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
+    <div className="bg-blue-900 border-2 rounded-lg p-3.75 text-white  min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
       <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
         📚 Tutorial
       </div>
@@ -153,7 +153,7 @@ function NoteNode({ data, id, accentColor = '#61dafb' }: { data: any; id: string
   };
 
   return (
-    <div className="bg-yellow-900 border-2 rounded-lg p-3.75 text-white font-mono min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
+    <div className="bg-yellow-900 border-2 rounded-lg p-3.75 text-white  min-w-50 max-w-62.5" style={{ borderColor: accentColor }}>
       <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
         📝 Note: {id}
       </div>
@@ -177,7 +177,7 @@ function NoteNode({ data, id, accentColor = '#61dafb' }: { data: any; id: string
               handleTextChange(text);
             }
           }}
-          className="w-full bg-yellow-800 border border-yellow-600 rounded text-white font-mono text-sm p-2 resize-vertical min-h-20"
+          className="w-full bg-yellow-800 border border-yellow-600 rounded text-white  text-sm p-2 resize-vertical min-h-20"
           placeholder="Write your note here..."
           autoFocus
         />
@@ -224,7 +224,7 @@ function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: strin
   };
 
   return (
-    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white font-mono min-w-75 max-w-100" style={{ borderColor: accentColor }}>
+    <div className="bg-gray-900 border-2 rounded-lg p-3.75 text-white  min-w-75 max-w-100" style={{ borderColor: accentColor }}>
       <div className="text-base font-bold mb-2.5" style={{ color: accentColor }}>
         Scene: {id}
       </div>
@@ -244,7 +244,7 @@ function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: strin
               handleTextChange(text);
             }
           }}
-          className="w-full bg-gray-800 border border-gray-600 rounded text-white font-mono text-sm p-2 resize-vertical min-h-15"
+          className="w-full bg-gray-800 border border-gray-600 rounded text-white  text-sm p-2 resize-vertical min-h-15"
           autoFocus
         />
       ) : (
@@ -259,7 +259,7 @@ function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: strin
       <div className="mb-2.5">
         <button
           onClick={addChoice}
-          className="bg-green-500 text-white border-none px-2.5 py-1.25 rounded cursor-pointer text-xs font-mono"
+          className="bg-green-500 text-white border-none px-2.5 py-1.25 rounded cursor-pointer text-xs "
         >
           <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add Choice
         </button>
@@ -273,14 +273,14 @@ function SceneNode({ data, id, accentColor = '#61dafb' }: { data: any; id: strin
               value={choice.text}
               onChange={(e) => updateChoice(index, 'text', e.target.value)}
               placeholder="Choice text"
-              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white font-mono text-xs px-2 py-1"
+              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white  text-xs px-2 py-1"
             />
             <input
               type="text"
               value={choice.nextScene}
               onChange={(e) => updateChoice(index, 'nextScene', e.target.value)}
               placeholder="Target scene"
-              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white font-mono text-xs px-2 py-1"
+              className="flex-1 bg-gray-800 border border-gray-600 rounded text-white  text-xs px-2 py-1"
             />
             <button
               onClick={() => deleteChoice(index)}
@@ -905,46 +905,46 @@ export default function CodeEditor() {
         >
           <button
             onClick={() => { addNode(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
           >
             + Add Scene
           </button>
           <button
             onClick={() => { addBattleNode(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
           >
             ⚔️ Add Battle
           </button>
           <button
             onClick={() => { addNoteNode(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
           >
             📝 Add Note
           </button>
           {!hasThemeSettingsNode && (
             <button
               onClick={() => { addThemeSettingsNode(); setContextMenu(null); }}
-              className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+              className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
             >
               Add Themes
             </button>
           )}
           <button
             onClick={() => { startPlay(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
           >
             ▶ Play Adventure
           </button>
           <button
             onClick={() => { downloadAdventure(); setContextMenu(null); }}
-            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+            className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
           >
             ⬇ Download HTML
           </button>
           <div className="border-t border-gray-600 my-1"></div>
           <button
             onClick={clearAll}
-            className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700 font-mono text-sm"
+            className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-700  text-sm"
           >
             🗑 Clear All
           </button>
@@ -953,7 +953,7 @@ export default function CodeEditor() {
       <div className="absolute top-2.5 left-2.5 z-10">
         <button
           onClick={() => router.back()}
-          className="text-white border border-gray-600 px-4 py-2 rounded-xl cursor-pointer font-bold font-mono"
+          className="text-white border border-gray-600 px-4 py-2 rounded-xl cursor-pointer font-bold "
         >
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           Back
@@ -966,7 +966,7 @@ export default function CodeEditor() {
               e.stopPropagation();
               setAddDropdownOpen(!addDropdownOpen);
             }}
-            className="bg-gray-700 text-white border border-gray-600 px-4 py-2 rounded-xl cursor-pointer font-bold font-mono hover:bg-gray-600"
+            className="bg-gray-700 text-white border border-gray-600 px-4 py-2 rounded-xl cursor-pointer font-bold  hover:bg-gray-600"
           >
             Add ▼
           </button>
@@ -978,7 +978,7 @@ export default function CodeEditor() {
                   addNode();
                   setAddDropdownOpen(false);
                 }}
-                className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+                className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
               >
                 + Scene
               </button>
@@ -988,7 +988,7 @@ export default function CodeEditor() {
                   addBattleNode();
                   setAddDropdownOpen(false);
                 }}
-                className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+                className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
               >
                 Battle
               </button>
@@ -998,7 +998,7 @@ export default function CodeEditor() {
                   addNoteNode();
                   setAddDropdownOpen(false);
                 }}
-                className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+                className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
               >
                 Note
               </button>
@@ -1009,7 +1009,7 @@ export default function CodeEditor() {
                     addThemeSettingsNode();
                     setAddDropdownOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+                  className="w-full text-left px-3 py-2 text-white hover:bg-gray-700  text-sm"
                 >
                   Themes
                 </button>
@@ -1019,13 +1019,13 @@ export default function CodeEditor() {
         </div>
         <button
           onClick={startPlay}
-          className="text-white border-2 border-gray-600 px-4 py-2 rounded cursor-pointer font-bold font-mono"
+          className="text-white border-2 border-gray-600 px-4 py-2 rounded cursor-pointer font-bold bg-black"
         >
 Test Game
         </button>
         <button
           onClick={downloadAdventure}
-          className="text-white border-2 border-gray-600 px-4 py-2 rounded cursor-pointer font-bold font-mono"
+          className="text-white border-2 border-gray-600 px-4 py-2 rounded cursor-pointer font-bold bg-black"
         >
           <FontAwesomeIcon icon={faFileCode} className="mr-2" />Download HTML
         </button>

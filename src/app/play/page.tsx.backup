@@ -842,7 +842,6 @@ function PlayAdventure() {
 
             currentScene = nextScene;
 
-            // Check if scene has battle
             const sceneData = SCENE_DATA[currentScene];
             if (sceneData && sceneData.battle && sceneData.battle.enabled) {
                 startBattle(sceneData.battle.enemyName, sceneData.battle.enemyHealth);
@@ -903,7 +902,6 @@ function PlayAdventure() {
             '</div>';
         }
 
-        // Initialize
         if (SPIDERS_ENABLED) {
             new SpiderController({
                 minDelay: 200,
@@ -917,7 +915,6 @@ function PlayAdventure() {
             }).initialize();
         }
 
-        // Check if initial scene has battle
         const initialSceneData = SCENE_DATA[currentScene];
         if (initialSceneData && initialSceneData.battle && initialSceneData.battle.enabled) {
             startBattle(initialSceneData.battle.enemyName, initialSceneData.battle.enemyHealth);

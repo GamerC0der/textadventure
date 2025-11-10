@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactFlow, {
   addEdge,
@@ -274,6 +274,15 @@ const SceneNode = ({ data, id, accentColor = '#f97316' }: { data: any; id: strin
   const [enemyName, setEnemyName] = useState(data.battle?.enemyName || 'Mighty Warrior');
   const [enemyHealth, setEnemyHealth] = useState(data.battle?.enemyHealth || 80);
   const [defendEnabled, setDefendEnabled] = useState(data.battle?.defendEnabled ?? true);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [attackMin, setAttackMin] = useState(data.battle?.attackDamageMin || 10);
+  const [attackMax, setAttackMax] = useState(data.battle?.attackDamageMax || 20);
+
+  useEffect(() => {
+    if (data.battle && (!data.battle.attackDamageMin || !data.battle.attackDamageMax)) {
+      updateData({ battle: { ...data.battle, attackDamageMin: data.battle.attackDamageMin || attackMin, attackDamageMax: data.battle.attackDamageMax || attackMax } });
+    }
+  }, []);
 
   const updateData = (updates: any) => data.onChange?.(id, { ...data, ...updates });
 
@@ -386,6 +395,13 @@ const SceneNode = ({ data, id, accentColor = '#f97316' }: { data: any; id: strin
                 </div>
               </label>
             </div>
+            <div className="mt-4">
+              <button onClick={() => setAdvancedOpen(!advancedOpen)} className="w-full text-left text-sm text-gray-300 hover:text-white py-1 border-t border-gray-600">Advanced Options {advancedOpen ? '▼' : '▶'}</button>
+              {advancedOpen && <div className="mt-3 space-y-2">
+                <div><label className="text-sm text-gray-300">Min Attack:</label><input type="range" min="1" max="50" value={attackMin} onChange={(e) => { const val = parseInt(e.target.value); setAttackMin(val); if (attackMax < val) setAttackMax(val); updateData({ battle: { ...data.battle, attackDamageMin: val, attackDamageMax: Math.max(attackMax, val) } }); }} className="w-full"/><span className="text-xs text-gray-400 ml-2">{attackMin}</span></div>
+                <div><label className="text-sm text-gray-300">Max Attack:</label><input type="range" min="1" max="50" value={attackMax} onChange={(e) => { const val = Math.max(parseInt(e.target.value), attackMin); setAttackMax(val); updateData({ battle: { ...data.battle, attackDamageMin: attackMin, attackDamageMax: val } }); }} className="w-full"/><span className="text-xs text-gray-400 ml-2">{attackMax}</span></div>
+              </div>}
+            </div>
           </div>
         </div>
       ) : (
@@ -475,7 +491,9 @@ export default function CodeEditor() {
           enabled: true,
           enemyName: 'Mighty Warrior',
           enemyHealth: 80,
-          defendEnabled: true
+          defendEnabled: true,
+          attackDamageMin: 10,
+          attackDamageMax: 20
         }
       },
     }));
@@ -774,8 +792,6 @@ export default function CodeEditor() {
 
         const PLAYER_MAX_HEALTH = 100;
         const BATTLE_TIMEOUT = 2000;
-        const ATTACK_DAMAGE_MIN = 10;
-        const ATTACK_DAMAGE_MAX = 20;
         const ENEMY_DAMAGE_MIN = 5;
         const ENEMY_DAMAGE_MAX = 15;
         const DEFENSE_MULTIPLIER = 0.5;
@@ -999,7 +1015,9 @@ export default function CodeEditor() {
             }
 
             playerAttack() {
-                const damage = Math.floor(Math.random() * (ATTACK_DAMAGE_MAX - ATTACK_DAMAGE_MIN + 1)) + ATTACK_DAMAGE_MIN;
+                const attackMin = SCENE_DATA[this.currentScene].battle?.attackDamageMin || 10;
+                const attackMax = SCENE_DATA[this.currentScene].battle?.attackDamageMax || 20;
+                const damage = Math.floor(Math.random() * (attackMax - attackMin + 1)) + attackMin;
                 const newEnemyHealth = Math.max(0, this.battle.enemyHealth - damage);
                 const log = [...this.battle.battleLog, \`You attack for \${damage} damage!\`];
 

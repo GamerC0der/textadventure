@@ -18,13 +18,13 @@ Repeat this step to update the text and options for your first new scene!
 
 ## Playing your game
 
-To play your game, press the play adventure button. Your game will open in a new tab. 
+To play your game, press the play adventure button. Your game will open in a new tab.
 
 You can also share your game via an HTML file, by pressing Download HTML.
 
 ### Common Errors
 
-- Scene "forest" not found! 
+- Scene "forest" not found!
    - Make sure you have updated forest with your new scene id.
 - Additional Unwanted Nodes
   - Remove the node using the backspace key on your keyboard.
@@ -33,7 +33,7 @@ You can also share your game via an HTML file, by pressing Download HTML.
 
 ### Battles
 
-Battles can also be added to your game to add your own RPG elements. Battles may only be added at the end as a final boss fight. 
+Battles can also be added to your game to add your own RPG elements. Battles may only be added at the end as a final boss fight.
 
 When making a battle, do not edit any battle settings. They come preconfigued!
 

@@ -341,6 +341,7 @@ export default function CodeEditor() {
   const [tabTitle, setTabTitle] = useState('My Adventure');
   const [spiders, setSpiders] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [addDropdownOpen, setAddDropdownOpen] = useState(false);
 
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
@@ -414,6 +415,7 @@ export default function CodeEditor() {
 
   const handleClick = () => {
     setContextMenu(null);
+    setAddDropdownOpen(false);
   };
 
   const clearAll = () => {
@@ -937,25 +939,51 @@ export default function CodeEditor() {
         </button>
       </div>
       <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">
-        <button
-          onClick={addNode}
-          className="px-4 py-2 rounded cursor-pointer font-bold font-mono text-black"
-          style={{ background: accentColor }}
-        >
-          + Add Scene
-        </button>
-        <button
-          onClick={() => addBattleNode()}
-          className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer font-bold font-mono"
-        >
-          ⚔️ Add Battle
-        </button>
-        <button
-          onClick={addNoteNode}
-          className="bg-yellow-500 text-black px-4 py-2 rounded cursor-pointer font-bold font-mono"
-        >
-          📝 Add Note
-        </button>
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setAddDropdownOpen(!addDropdownOpen);
+            }}
+            className="bg-gray-700 text-white border border-gray-600 px-4 py-2 rounded-xl cursor-pointer font-bold font-mono hover:bg-gray-600"
+          >
+            Add ▼
+          </button>
+          {addDropdownOpen && (
+            <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-600 rounded-xl shadow-lg py-1 min-w-40 z-20">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addNode();
+                  setAddDropdownOpen(false);
+                }}
+                className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+              >
+                + Scene
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addBattleNode();
+                  setAddDropdownOpen(false);
+                }}
+                className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+              >
+                Battle
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addNoteNode();
+                  setAddDropdownOpen(false);
+                }}
+                className="w-full text-left px-3 py-2 text-white hover:bg-gray-700 font-mono text-sm"
+              >
+                Note
+              </button>
+            </div>
+          )}
+        </div>
         <button
           onClick={startPlay}
           className="bg-green-500 text-white border-none px-4 py-2 rounded cursor-pointer font-bold font-mono"

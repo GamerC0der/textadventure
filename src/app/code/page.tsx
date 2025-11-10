@@ -953,6 +953,22 @@ export default function CodeEditor() {
           <p className="text-gray-300 text-sm leading-relaxed">
             To add a choice, press the Add Choice button.
           </p>
+          <div className="mb-5"><button className="bg-gray-800 text-white border border-gray-600 px-5 py-2.5 rounded cursor-pointer text-sm hover:bg-gray-700"><svg data-prefix="fas" data-icon="circle-plus" className="svg-inline--fa fa-circle-plus mr-2 h-4 w-4" role="img" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"></path></svg> Add&nbsp;Choice</button></div>
+          <p className="text-gray-300 text-sm leading-relaxed">
+            Then use the add dropdown to add a scene.
+          </p>
+          <div className="mt-3 flex justify-center">
+            <div className="relative inline-block">
+              <div className="bg-gray-700 text-white border border-gray-600 px-4 py-2 rounded-xl font-bold opacity-60 cursor-not-allowed">
+                Add ▼
+              </div>
+              <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-600 rounded-xl shadow-lg py-1 min-w-40 z-20 opacity-60">
+                <div className="px-3 py-2 text-white text-sm cursor-not-allowed">
+                  + Scene
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">

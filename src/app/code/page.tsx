@@ -15,7 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpider, faPlus, faFileCode } from '@fortawesome/free-solid-svg-icons';
+import { faSpider, faPlus, faFileCode, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 const NODE_MIN_WIDTH = 200;
 const NODE_MAX_WIDTH = 250;
@@ -953,10 +953,10 @@ export default function CodeEditor() {
       <div className="absolute top-2.5 left-2.5 z-10">
         <button
           onClick={() => router.back()}
-          className="bg-gray-700 text-white border px-4 py-2 rounded cursor-pointer font-bold font-mono"
-          style={{ borderColor: accentColor }}
+          className="text-white border border-gray-600 px-4 py-2 rounded-xl cursor-pointer font-bold font-mono"
         >
-          ← Back
+          <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
+          Back
         </button>
       </div>
       <div className="absolute top-2.5 right-2.5 z-10 flex gap-2.5">
